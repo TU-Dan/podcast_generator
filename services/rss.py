@@ -36,6 +36,33 @@ def generate_rss(base_url: str = "http://localhost:8000"):
         
     fg.rss_file("static/podcast.xml")
 
+def generate_rss_for_export(pages_base_url: str, output_path: str):
+    """Regenerate RSS with GitHub Pages URLs for public hosting."""
+    pages_base_url = pages_base_url.rstrip("/")
+    episodes = load_episodes()
+
+    fg = FeedGenerator()
+    fg.load_extension('podcast')
+    fg.title('My Personal Podcast')
+    fg.description('Generated audio from web articles, PDFs, and YouTube videos.')
+    fg.link(href=pages_base_url, rel='alternate')
+    fg.language('zh-CN')
+
+    for ep in episodes:
+        filename = ep['audio_url'].split('/')[-1]
+        audio_url = f"{pages_base_url}/audio/{filename}"
+
+        fe = fg.add_entry()
+        fe.id(audio_url)
+        fe.title(ep['title'])
+        fe.description(ep['description'])
+        fe.enclosure(audio_url, str(ep['audio_length']), 'audio/mpeg')
+        fe.published(ep['published'])
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    fg.rss_file(output_path)
+
+
 def add_episode(title: str, description: str, audio_filename: str, audio_length: int, base_url: str = "http://localhost:8000"):
     episodes = load_episodes()
     

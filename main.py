@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 import os
 import re
 import shutil
+import subprocess
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
@@ -177,6 +178,26 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.post("/publish")
+async def publish_to_pages():
+    pages_url = os.getenv("GITHUB_PAGES_URL", "").rstrip("/")
+    if not pages_url:
+        return JSONResponse({"ok": False, "error": "GITHUB_PAGES_URL 未在 .env 中配置"}, status_code=400)
+    try:
+        result = subprocess.run(
+            ["python3", "scripts/publish_to_pages.py"],
+            capture_output=True, text=True, timeout=120
+        )
+        if result.returncode != 0:
+            return JSONResponse({"ok": False, "error": result.stderr or result.stdout})
+        rss_url = f"{pages_url}/podcast.xml"
+        return JSONResponse({"ok": True, "rss_url": rss_url, "log": result.stdout})
+    except subprocess.TimeoutExpired:
+        return JSONResponse({"ok": False, "error": "发布超时，请检查网络连接"}, status_code=500)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
 
 
 @app.get("/status/{job_id}")

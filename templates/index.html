@@ -156,8 +156,19 @@
         </div>
     </div>
 
+    <!-- Publish section -->
+    <div class="container">
+        <h2>发布到 GitHub Pages</h2>
+        <p style="color:#666;font-size:14px;margin-top:0">
+            将音频和 RSS 推送到 gh-pages 分支，通过 GitHub Pages 公开托管。<br>
+            需先在 <code>.env</code> 中配置 <code>GITHUB_PAGES_URL</code>，并在 GitHub 仓库设置中开启 Pages（Branch: gh-pages）。
+        </p>
+        <button id="publish-btn" onclick="publishToPages()">一键发布到 GitHub Pages</button>
+        <div id="publish-status" style="margin-top:12px;font-size:14px;display:none"></div>
+    </div>
+
     <div class="rss-link">
-        <p>播客 RSS 订阅地址：</p>
+        <p>本地 RSS 订阅地址：</p>
         <a href="/static/podcast.xml" target="_blank">/static/podcast.xml</a>
         <p><small>将此链接添加到 Apple Podcasts 等客户端</small></p>
     </div>
@@ -253,6 +264,34 @@
 
         document.getElementById('url-form').addEventListener('submit', e => submitForm(e, '/generate/url'));
         document.getElementById('file-form').addEventListener('submit', e => submitForm(e, '/generate/file'));
+
+        async function publishToPages() {
+            const btn = document.getElementById('publish-btn');
+            const status = document.getElementById('publish-status');
+            btn.disabled = true;
+            btn.textContent = '发布中...';
+            status.style.display = 'block';
+            status.style.color = '#333';
+            status.textContent = '正在推送到 GitHub Pages，请稍候...';
+
+            try {
+                const res = await fetch('/publish', { method: 'POST' });
+                const data = await res.json();
+                if (data.ok) {
+                    status.style.color = '#28a745';
+                    status.innerHTML = `发布成功！RSS 订阅地址：<a href="${data.rss_url}" target="_blank">${data.rss_url}</a>`;
+                } else {
+                    status.style.color = '#dc3545';
+                    status.textContent = '发布失败：' + data.error;
+                }
+            } catch (e) {
+                status.style.color = '#dc3545';
+                status.textContent = '发布出错：' + e.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '一键发布到 GitHub Pages';
+            }
+        }
     </script>
 </body>
 </html>
