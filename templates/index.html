@@ -156,6 +156,21 @@
         </div>
     </div>
 
+    <!-- Import RSS section -->
+    <div class="container">
+        <h2>导入外部 RSS 订阅</h2>
+        <p style="color:#666;font-size:14px;margin-top:0">将已有播客 RSS 里的集数导入到本地，统一管理。</p>
+        <form id="import-form">
+            <div class="form-group">
+                <label for="rss_url">RSS 地址:</label>
+                <input type="text" id="rss_url" name="rss_url" placeholder="https://..." required
+                    value="https://TU-Dan.github.io/my-podcast-server/rss.xml">
+            </div>
+            <button type="submit" id="import-btn">导入</button>
+        </form>
+        <div id="import-status" style="margin-top:10px;font-size:14px;display:none"></div>
+    </div>
+
     <!-- Publish section -->
     <div class="container">
         <h2>发布到 GitHub Pages</h2>
@@ -264,6 +279,34 @@
 
         document.getElementById('url-form').addEventListener('submit', e => submitForm(e, '/generate/url'));
         document.getElementById('file-form').addEventListener('submit', e => submitForm(e, '/generate/file'));
+
+        document.getElementById('import-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('import-btn');
+            const status = document.getElementById('import-status');
+            btn.disabled = true;
+            btn.textContent = '导入中...';
+            status.style.display = 'block';
+            status.style.color = '#333';
+            status.textContent = '正在读取远端 RSS...';
+            try {
+                const res = await fetch('/import-rss', { method: 'POST', body: new FormData(e.target) });
+                const data = await res.json();
+                if (data.ok) {
+                    status.style.color = '#28a745';
+                    status.textContent = `导入完成：新增 ${data.imported} 集，跳过已有 ${data.skipped} 集。`;
+                } else {
+                    status.style.color = '#dc3545';
+                    status.textContent = '导入失败：' + data.error;
+                }
+            } catch (err) {
+                status.style.color = '#dc3545';
+                status.textContent = '出错：' + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '导入';
+            }
+        });
 
         async function publishToPages() {
             const btn = document.getElementById('publish-btn');

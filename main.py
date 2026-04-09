@@ -16,6 +16,7 @@ from services.extractor import extract_content
 from services.llm import distill_and_translate, chunk_text, polish_chunk, detect_language, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
 from services.rss import add_episode
+from services.importer import import_from_rss
 
 app = FastAPI()
 
@@ -178,6 +179,16 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.post("/import-rss")
+async def import_rss(request: Request, rss_url: str = Form(...)):
+    base_url = str(request.base_url).rstrip("/")
+    try:
+        imported, skipped = import_from_rss(rss_url, base_url)
+        return JSONResponse({"ok": True, "imported": imported, "skipped": skipped})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
 
 
 @app.post("/publish")
