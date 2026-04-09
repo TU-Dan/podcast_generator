@@ -47,9 +47,8 @@ def download_thumbnail(thumbnail_url: str) -> str | None:
     try:
         r = cffi_requests.get(thumbnail_url, timeout=10, impersonate="chrome")
         r.raise_for_status()
-        ext = r.headers.get("content-type", "image/jpeg").split("/")[-1].split(";")[0].strip()
-        if ext not in ("jpeg", "jpg", "png", "webp"):
-            ext = "jpg"
+        content_type = r.headers.get("content-type", "image/jpeg").lower()
+        ext = "png" if "png" in content_type else "jpg"
         filename = f"{uuid.uuid4().hex}.{ext}"
         path = os.path.join("static/images", filename)
         with open(path, "wb") as f:
