@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from curl_cffi import requests as cffi_requests
 from services.extractor import extract_content
 from services.llm import distill_and_translate, chunk_text, polish_chunk, detect_language, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
@@ -38,6 +39,25 @@ def sanitize_filename(title: str) -> str:
     safe = re.sub(r'[^\w\u4e00-\u9fff]', '_', title)
     safe = re.sub(r'_+', '_', safe).strip('_')
     return safe[:50]
+
+
+def download_thumbnail(thumbnail_url: str) -> str | None:
+    """Download remote thumbnail to static/images/. Returns local URL path."""
+    os.makedirs("static/images", exist_ok=True)
+    try:
+        r = cffi_requests.get(thumbnail_url, timeout=10, impersonate="chrome")
+        r.raise_for_status()
+        ext = r.headers.get("content-type", "image/jpeg").split("/")[-1].split(";")[0].strip()
+        if ext not in ("jpeg", "jpg", "png", "webp"):
+            ext = "jpg"
+        filename = f"{uuid.uuid4().hex}.{ext}"
+        path = os.path.join("static/images", filename)
+        with open(path, "wb") as f:
+            f.write(r.content)
+        return f"/static/images/{filename}"
+    except Exception as e:
+        print(f"Failed to download thumbnail: {e}")
+        return None
 
 
 def save_transcript(title: str, text: str, source_type: str) -> str:
@@ -93,12 +113,17 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
     print(f"[{job_id}] Starting: {title}")
 
     try:
-        # 1. Extract
+        # 1. Extract text + thumbnail
         update_job(job_id, "extracting", "正在提取内容...")
-        text = extract_content(source, source_type)
+        text, thumbnail_url = extract_content(source, source_type)
         if not text:
             update_job(job_id, "error", "内容提取失败，请检查链接或文件。")
             return
+
+        # Download thumbnail if available
+        episode_image = None
+        if thumbnail_url:
+            episode_image = download_thumbnail(thumbnail_url)
 
         # 2. Save transcript
         transcript_url = save_transcript(title, text, source_type)
@@ -128,7 +153,8 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                 description=text[:200] + "...",
                 audio_filename=audio_filename,
                 audio_length=os.path.getsize(audio_path),
-                base_url=base_url
+                base_url=base_url,
+                episode_image=episode_image
             )
 
         else:
@@ -159,7 +185,8 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                     description=chunk[:200] + "...",
                     audio_filename=audio_filename,
                     audio_length=os.path.getsize(audio_path),
-                    base_url=base_url
+                    base_url=base_url,
+                    episode_image=episode_image
                 )
 
         update_job(job_id, "done", f"全部完成！共生成 {len(jobs[job_id]['files'])} 个文件。")

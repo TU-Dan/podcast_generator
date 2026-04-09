@@ -7,5 +7,6 @@ static/episodes.json
 static/podcast.xml
 static/transcripts/
 static/scripts/
+static/images/
 .DS_Store
 *.pyc

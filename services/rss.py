@@ -36,6 +36,8 @@ def _build_feed(base_url: str, episodes: list) -> object:
         fe.enclosure(ep['audio_url'], str(ep['audio_length']), 'audio/mpeg')
         fe.published(ep['published'])
         fe.podcast.itunes_explicit('no')
+        if ep.get('episode_image'):
+            fe.podcast.itunes_image(ep['episode_image'])
 
     return fg
 
@@ -44,34 +46,44 @@ def generate_rss(base_url: str = "http://localhost:8000"):
     fg = _build_feed(base_url, load_episodes())
     fg.rss_file("static/podcast.xml")
 
+
 def generate_rss_for_export(pages_base_url: str, output_path: str):
     """Regenerate RSS with GitHub Pages URLs for public hosting."""
     pages_base_url = pages_base_url.rstrip("/")
     episodes = load_episodes()
 
-    # Rewrite audio URLs to use GitHub Pages base
     export_episodes = []
     for ep in episodes:
-        filename = ep['audio_url'].split('/')[-1]
-        export_episodes.append({**ep, "audio_url": f"{pages_base_url}/audio/{filename}"})
+        audio_filename = ep['audio_url'].split('/')[-1]
+        updated = {**ep, "audio_url": f"{pages_base_url}/audio/{audio_filename}"}
+
+        # Rewrite episode image URL if it's a local static path
+        if ep.get('episode_image'):
+            img_filename = ep['episode_image'].split('/')[-1]
+            updated['episode_image'] = f"{pages_base_url}/images/{img_filename}"
+
+        export_episodes.append(updated)
 
     fg = _build_feed(pages_base_url, export_episodes)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     fg.rss_file(output_path)
 
 
-def add_episode(title: str, description: str, audio_filename: str, audio_length: int, base_url: str = "http://localhost:8000"):
+def add_episode(title: str, description: str, audio_filename: str, audio_length: int,
+                base_url: str = "http://localhost:8000", episode_image: str = None):
     episodes = load_episodes()
-    
     audio_url = f"{base_url}/static/audio/{audio_filename}"
-    
-    episodes.insert(0, {
+
+    ep = {
         "title": title,
         "description": description,
         "audio_url": audio_url,
         "audio_length": audio_length,
-        "published": datetime.now(timezone.utc).isoformat()
-    })
-    
+        "published": datetime.now(timezone.utc).isoformat(),
+    }
+    if episode_image:
+        ep["episode_image"] = episode_image
+
+    episodes.insert(0, ep)
     save_episodes(episodes)
     generate_rss(base_url)

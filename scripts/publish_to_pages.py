@@ -98,6 +98,19 @@ def publish() -> str:
                 copied += 1
         print(f"Copied {copied} new audio file(s).")
 
+        # Copy new images
+        images_src = ROOT / "static" / "images"
+        images_dst = Path(WORKTREE) / "images"
+        if images_src.exists():
+            images_dst.mkdir(exist_ok=True)
+            copied_imgs = 0
+            for f in images_src.iterdir():
+                dst = images_dst / f.name
+                if not dst.exists():
+                    shutil.copy2(f, dst)
+                    copied_imgs += 1
+            print(f"Copied {copied_imgs} new image(s).")
+
         # Regenerate podcast.xml with GitHub Pages URLs
         generate_rss_for_export(PAGES_URL, f"{WORKTREE}/podcast.xml")
         print(f"Generated podcast.xml → {PAGES_URL}/podcast.xml")
