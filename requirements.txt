@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+edge-tts
+yt-dlp
+deep-translator
+feedgen
+trafilatura
+PyPDF2
+python-multipart
+jinja2
+curl_cffi
+openai
+python-dotenv
