@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人专属播客生成器</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
@@ -12,10 +13,8 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #444; margin-top: 0; }
         .container {
             background-color: white;
             padding: 30px;
@@ -23,20 +22,14 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="file"] {
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="file"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
+            background-color: white;
         }
         button {
             background-color: #007bff;
@@ -46,30 +39,63 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.2s;
         }
-        button:hover {
-            background-color: #0056b3;
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #aaa; cursor: not-allowed; }
+
+        /* Progress section */
+        #progress-section { display: none; }
+        .progress-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
+        .spinner {
+            width: 20px; height: 20px;
+            border: 3px solid #ddd;
+            border-top-color: #007bff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        .spinner.hidden { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #progress-message { font-size: 15px; color: #333; }
+        .status-done #progress-message { color: #28a745; font-weight: bold; }
+        .status-error #progress-message { color: #dc3545; font-weight: bold; }
+
+        .file-list { margin-top: 16px; }
+        .file-list h3 { margin: 0 0 10px; font-size: 14px; color: #666; }
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .file-item a { color: #007bff; text-decoration: none; }
+        .file-item a:hover { text-decoration: underline; }
+        .file-icon { font-size: 16px; }
+
         .rss-link {
             text-align: center;
             margin-top: 20px;
         }
-        .rss-link a {
-            color: #28a745;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .rss-link a:hover {
-            text-decoration: underline;
-        }
+        .rss-link a { color: #28a745; font-weight: bold; text-decoration: none; }
+        .rss-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <h1>个人专属播客生成器</h1>
-    
+
     <div class="container">
         <h2>从链接生成 (网页/YouTube)</h2>
-        <form action="/generate/url" method="post" target="_blank">
+        <form id="url-form">
             <div class="form-group">
                 <label for="title">播客标题:</label>
                 <input type="text" id="title" name="title" required placeholder="输入这一期的标题">
@@ -78,13 +104,23 @@
                 <label for="url">文章或视频链接:</label>
                 <input type="text" id="url" name="url" required placeholder="https://...">
             </div>
-            <button type="submit">一键生成</button>
+            <div class="form-group">
+                <label for="voice_url">音色选择:</label>
+                <select id="voice_url" name="voice">
+                    <option value="zh-CN-XiaoxiaoNeural">晓晓 (女声·温柔)</option>
+                    <option value="zh-CN-XiaoyiNeural">晓伊 (女声·活泼)</option>
+                    <option value="zh-CN-YunxiNeural">云希 (男声·活泼)</option>
+                    <option value="zh-CN-YunyangNeural">云扬 (男声·专业)</option>
+                    <option value="zh-CN-YunjianNeural">云健 (男声·成熟)</option>
+                </select>
+            </div>
+            <button type="submit" id="url-btn">一键生成</button>
         </form>
     </div>
 
     <div class="container">
         <h2>从文件生成 (PDF/TXT)</h2>
-        <form action="/generate/file" method="post" enctype="multipart/form-data" target="_blank">
+        <form id="file-form">
             <div class="form-group">
                 <label for="title_file">播客标题:</label>
                 <input type="text" id="title_file" name="title" required placeholder="输入这一期的标题">
@@ -93,14 +129,130 @@
                 <label for="file">上传文件:</label>
                 <input type="file" id="file" name="file" accept=".pdf,.txt" required>
             </div>
-            <button type="submit">一键生成</button>
+            <div class="form-group">
+                <label for="voice_file">音色选择:</label>
+                <select id="voice_file" name="voice">
+                    <option value="zh-CN-XiaoxiaoNeural">晓晓 (女声·温柔)</option>
+                    <option value="zh-CN-XiaoyiNeural">晓伊 (女声·活泼)</option>
+                    <option value="zh-CN-YunxiNeural">云希 (男声·活泼)</option>
+                    <option value="zh-CN-YunyangNeural">云扬 (男声·专业)</option>
+                    <option value="zh-CN-YunjianNeural">云健 (男声·成熟)</option>
+                </select>
+            </div>
+            <button type="submit" id="file-btn">一键生成</button>
         </form>
     </div>
 
-    <div class="rss-link">
-        <p>您的播客 RSS 订阅源地址：</p>
-        <a href="/static/podcast.xml" target="_blank">/static/podcast.xml</a>
-        <p><small>(将此链接复制到 Apple Podcasts 等客户端中添加订阅)</small></p>
+    <!-- Progress section -->
+    <div class="container" id="progress-section">
+        <h2>生成进度</h2>
+        <div class="progress-header">
+            <div class="spinner" id="spinner"></div>
+            <span id="progress-message">等待中...</span>
+        </div>
+        <div class="file-list" id="file-list" style="display:none">
+            <h3>生成的文件</h3>
+            <div id="file-items"></div>
+        </div>
     </div>
+
+    <div class="rss-link">
+        <p>播客 RSS 订阅地址：</p>
+        <a href="/static/podcast.xml" target="_blank">/static/podcast.xml</a>
+        <p><small>将此链接添加到 Apple Podcasts 等客户端</small></p>
+    </div>
+
+    <script>
+        const FILE_ICONS = {
+            '原始逐字稿': '📄',
+            default: '🎙️'
+        };
+
+        let pollTimer = null;
+
+        function showProgress() {
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('progress-section').className = 'container';
+            document.getElementById('spinner').classList.remove('hidden');
+            document.getElementById('file-list').style.display = 'none';
+            document.getElementById('file-items').innerHTML = '';
+            document.getElementById('progress-message').textContent = '任务已提交，等待处理...';
+            document.getElementById('progress-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setButtons(disabled) {
+            document.getElementById('url-btn').disabled = disabled;
+            document.getElementById('file-btn').disabled = disabled;
+        }
+
+        function renderFiles(files) {
+            if (!files || files.length === 0) return;
+            const container = document.getElementById('file-items');
+            container.innerHTML = '';
+            files.forEach(f => {
+                const icon = FILE_ICONS[f.label] || FILE_ICONS.default;
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `<span class="file-icon">${icon}</span><a href="${f.url}" target="_blank">${f.label}</a>`;
+                container.appendChild(div);
+            });
+            document.getElementById('file-list').style.display = 'block';
+        }
+
+        function startPolling(jobId) {
+            if (pollTimer) clearInterval(pollTimer);
+            pollTimer = setInterval(async () => {
+                try {
+                    const res = await fetch(`/status/${jobId}`);
+                    const data = await res.json();
+
+                    document.getElementById('progress-message').textContent = data.message;
+                    renderFiles(data.files);
+
+                    if (data.status === 'done') {
+                        clearInterval(pollTimer);
+                        document.getElementById('spinner').classList.add('hidden');
+                        document.getElementById('progress-section').className = 'container status-done';
+                        setButtons(false);
+                    } else if (data.status === 'error') {
+                        clearInterval(pollTimer);
+                        document.getElementById('spinner').classList.add('hidden');
+                        document.getElementById('progress-section').className = 'container status-error';
+                        setButtons(false);
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                }
+            }, 2000);
+        }
+
+        async function submitForm(e, action) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            showProgress();
+            setButtons(true);
+
+            try {
+                const res = await fetch(action, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.job_id) {
+                    startPolling(data.job_id);
+                } else {
+                    document.getElementById('progress-message').textContent = '提交失败，请重试。';
+                    document.getElementById('spinner').classList.add('hidden');
+                    setButtons(false);
+                }
+            } catch (e) {
+                document.getElementById('progress-message').textContent = '提交出错：' + e.message;
+                document.getElementById('spinner').classList.add('hidden');
+                setButtons(false);
+            }
+        }
+
+        document.getElementById('url-form').addEventListener('submit', e => submitForm(e, '/generate/url'));
+        document.getElementById('file-form').addEventListener('submit', e => submitForm(e, '/generate/file'));
+    </script>
 </body>
 </html>

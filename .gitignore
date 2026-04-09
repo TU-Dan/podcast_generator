@@ -5,5 +5,7 @@ temp_uploads/
 static/audio/*.mp3
 static/episodes.json
 static/podcast.xml
+static/transcripts/
+static/scripts/
 .DS_Store
 *.pyc
