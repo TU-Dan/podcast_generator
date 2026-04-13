@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Apr 2026 09:57:41 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>horse</title><description>horse</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/horse.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/horse.mp3" length="28915" type="audio/mpeg"/><pubDate>Tue, 09 Dec 2025 10:30:06 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>horse</itunes:summary></item><item><title>段永平投资精华</title><description>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Apr 2026 10:19:41 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>horse</title><description>horse</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/horse.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/horse.mp3" length="28915" type="audio/mpeg"/><pubDate>Tue, 09 Dec 2025 10:30:06 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>horse</itunes:summary></item><item><title>段永平投资精华</title><description>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
 
 请看时间轴查阅：
 00:00 【一、投资方法篇】
@@ -109,4 +109,20 @@ Harness Engineering 是 AI 工程领域继 Prompt Engineering、Context Engineer
 推荐资源：
 
 《OpenClaw 完全指南（花园版）》：https://my.feishu.cn/wiki/QzGAwOH4LiZOYXktGyhcHoLUnRe
-《code秘密花园 AI 教程资源合集》：https://my.feishu.c...</itunes:summary></item></channel></rss>
+《code秘密花园 AI 教程资源合集》：https://my.feishu.c...</itunes:summary></item><item><title> DanKoe - You Need To Be Extreme If You Want Your Life To Change</title><description>You Need To Be Extreme If You Want Your Life To Change
+
+25% off the premium content library (with full one-person business course): https://letters.thedankoe.com/88de5d98
+
+read my letters: https://letters.thedankoe.com
+
+The best AI and note-taking tool: https://kortex.co
+
+How I systemize my life wit...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/81d637b6d13045dfac1fa3537114d87e.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/81d637b6d13045dfac1fa3537114d87e.mp3" length="4046544" type="audio/mpeg"/><pubDate>Mon, 13 Apr 2026 10:18:15 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/9e0e187638aa47a386c7c2bd8351f49e.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>You Need To Be Extreme If You Want Your Life To Change
+
+25% off the premium content library (with full one-person business course): https://letters.thedankoe.com/88de5d98
+
+read my letters: https://letters.thedankoe.com
+
+The best AI and note-taking tool: https://kortex.co
+
+How I systemize my life wit...</itunes:summary></item></channel></rss>
