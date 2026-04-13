@@ -16,7 +16,7 @@ from curl_cffi import requests as cffi_requests
 from services.extractor import extract_content
 from services.llm import distill_and_translate, chunk_text, polish_chunk, detect_language, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
-from services.rss import add_episode
+from services.rss import add_episode, clean_description
 from services.importer import import_from_rss
 
 app = FastAPI()
@@ -45,7 +45,7 @@ def download_thumbnail(thumbnail_url: str) -> str | None:
     """Download remote thumbnail to static/images/. Returns local URL path."""
     os.makedirs("static/images", exist_ok=True)
     try:
-        r = cffi_requests.get(thumbnail_url, timeout=10, impersonate="chrome")
+        r = cffi_requests.get(thumbnail_url, timeout=5, impersonate="chrome")
         r.raise_for_status()
         content_type = r.headers.get("content-type", "image/jpeg").lower()
         ext = "png" if "png" in content_type else "jpg"
@@ -149,7 +149,7 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
             audio_path = os.path.join("static/audio", audio_filename)
             add_episode(
                 title=title,
-                description=text[:200] + "...",
+                description=clean_description(text[:300]) + "...",
                 audio_filename=audio_filename,
                 audio_length=os.path.getsize(audio_path),
                 base_url=base_url,
@@ -181,7 +181,7 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                 audio_path = os.path.join("static/audio", audio_filename)
                 add_episode(
                     title=f"{title} {part_display}",
-                    description=chunk[:200] + "...",
+                    description=clean_description(chunk[:300]) + "...",
                     audio_filename=audio_filename,
                     audio_length=os.path.getsize(audio_path),
                     base_url=base_url,
