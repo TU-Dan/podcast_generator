@@ -3,207 +3,691 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人专属播客生成器</title>
+    <title>播客生成器</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --bg: #0d0d14;
+            --surface: #16161f;
+            --surface-2: #1e1e2d;
+            --border: rgba(255,255,255,0.07);
+            --accent: #7c5cfc;
+            --accent-2: #5b8dee;
+            --accent-glow: rgba(124,92,252,0.25);
+            --text: #e8e8f0;
+            --text-muted: #7a7a9a;
+            --success: #34d399;
+            --error: #f87171;
+            --radius: 16px;
+            --radius-sm: 10px;
         }
-        h1 { color: #333; text-align: center; }
-        h2 { color: #444; margin-top: 0; }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px 80px;
+        }
+
+        /* Background mesh */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,92,252,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(91,141,238,0.1) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .logo svg { width: 28px; height: 28px; fill: white; }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
             margin-bottom: 20px;
         }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="file"], select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: white;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.2s;
-        }
-        button:hover { background-color: #0056b3; }
-        button:disabled { background-color: #aaa; cursor: not-allowed; }
 
-        /* Progress section */
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--surface-2);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 9px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+        }
+
+        .tab.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 7px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]::placeholder { color: var(--text-muted); }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        select option { background: #1e1e2d; }
+
+        input[type="file"] {
+            cursor: pointer;
+            padding: 10px 14px;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            box-shadow: 0 4px 16px var(--accent-glow);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Progress */
         #progress-section { display: none; }
-        .progress-header {
+
+        .progress-bar-wrap {
+            height: 3px;
+            background: var(--surface-2);
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: 2px;
+            animation: slide 1.4s ease-in-out infinite;
+        }
+
+        .progress-bar.done {
+            width: 100%;
+            animation: none;
+            background: var(--success);
+        }
+
+        .progress-bar.error {
+            width: 100%;
+            animation: none;
+            background: var(--error);
+        }
+
+        @keyframes slide {
+            0%   { transform: translateX(-100%); }
+            50%  { transform: translateX(150%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .progress-status {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 12px;
+            font-size: 14px;
         }
-        .spinner {
-            width: 20px; height: 20px;
-            border: 3px solid #ddd;
-            border-top-color: #007bff;
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            background: var(--accent);
+            animation: pulse 1.4s ease infinite;
             flex-shrink: 0;
         }
-        .spinner.hidden { display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #progress-message { font-size: 15px; color: #333; }
-        .status-done #progress-message { color: #28a745; font-weight: bold; }
-        .status-error #progress-message { color: #dc3545; font-weight: bold; }
 
-        .file-list { margin-top: 16px; }
-        .file-list h3 { margin: 0 0 10px; font-size: 14px; color: #666; }
+        .status-dot.done { background: var(--success); animation: none; }
+        .status-dot.error { background: var(--error); animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        #progress-message { color: var(--text); }
+        .status-done-text { color: var(--success); font-weight: 600; }
+        .status-error-text { color: var(--error); font-weight: 600; }
+
+        /* File list */
+        .file-list { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; display: none; }
+
+        .file-list-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
         .file-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 6px;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
             font-size: 14px;
+            transition: border-color 0.2s;
         }
-        .file-item a { color: #007bff; text-decoration: none; }
-        .file-item a:hover { text-decoration: underline; }
-        .file-icon { font-size: 16px; }
 
-        .rss-link {
-            text-align: center;
-            margin-top: 20px;
+        .file-item:hover { border-color: var(--accent); }
+        .file-item a { color: var(--text); text-decoration: none; flex: 1; }
+        .file-item a:hover { color: var(--accent); }
+
+        .file-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-weight: 600;
         }
-        .rss-link a { color: #28a745; font-weight: bold; text-decoration: none; }
-        .rss-link a:hover { text-decoration: underline; }
+
+        /* Section divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0 16px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Secondary cards row */
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 560px) { .card-row { grid-template-columns: 1fr; } }
+
+        /* Script preview */
+        .script-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 32px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .script-empty svg { opacity: 0.3; }
+
+        .script-preview-wrap {
+            display: none;
+        }
+
+        .script-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .script-name {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .btn-dl {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 11px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid rgba(124,92,252,0.3);
+            border-radius: 6px;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-dl:hover { background: rgba(124,92,252,0.35); }
+
+        .script-body {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            max-height: 260px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text);
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .script-body::-webkit-scrollbar { width: 4px; }
+        .script-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Inline markdown styles */
+        .script-body h1 { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+        .script-body h2 { font-size: 13px; font-weight: 600; margin: 10px 0 6px; color: var(--text-muted); }
+        .script-body hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+        .script-body strong { color: var(--text); font-weight: 600; }
+        .script-body p { margin-bottom: 8px; }
+
+        /* Status text for import/publish */
+        .action-status {
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+        }
+
+        .action-status.success { color: var(--success); border-color: rgba(52,211,153,0.2); }
+        .action-status.error { color: var(--error); border-color: rgba(248,113,113,0.2); }
+
+        /* RSS footer */
+        .rss-footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .rss-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .rss-footer a:hover { text-decoration: underline; }
+
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
     </style>
 </head>
 <body>
-    <h1>个人专属播客生成器</h1>
-
-    <div class="container">
-        <h2>从链接生成 (网页/YouTube)</h2>
-        <form id="url-form">
-            <div class="form-group">
-                <label for="title">播客标题:</label>
-                <input type="text" id="title" name="title" required placeholder="输入这一期的标题">
+    <div class="page">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 1 0 4 0V5a2 2 0 0 0-2-2zm-7 8h2a7 7 0 0 0 14 0h2a9 9 0 0 1-8 8.94V22h-2v-2.06A9 9 0 0 1 5 11z"/>
+                </svg>
             </div>
-            <div class="form-group">
-                <label for="url">文章或视频链接:</label>
-                <input type="text" id="url" name="url" required placeholder="https://...">
-            </div>
-            <div class="form-group">
-                <label for="voice_url">音色选择:</label>
-                <select id="voice_url" name="voice">
-                    <option value="zh-CN-XiaoxiaoNeural">晓晓 (女声·温柔)</option>
-                    <option value="zh-CN-XiaoyiNeural">晓伊 (女声·活泼)</option>
-                    <option value="zh-CN-YunxiNeural">云希 (男声·活泼)</option>
-                    <option value="zh-CN-YunyangNeural">云扬 (男声·专业)</option>
-                    <option value="zh-CN-YunjianNeural">云健 (男声·成熟)</option>
-                </select>
-            </div>
-            <button type="submit" id="url-btn">一键生成</button>
-        </form>
-    </div>
-
-    <div class="container">
-        <h2>从文件生成 (PDF/TXT)</h2>
-        <form id="file-form">
-            <div class="form-group">
-                <label for="title_file">播客标题:</label>
-                <input type="text" id="title_file" name="title" required placeholder="输入这一期的标题">
-            </div>
-            <div class="form-group">
-                <label for="file">上传文件:</label>
-                <input type="file" id="file" name="file" accept=".pdf,.txt" required>
-            </div>
-            <div class="form-group">
-                <label for="voice_file">音色选择:</label>
-                <select id="voice_file" name="voice">
-                    <option value="zh-CN-XiaoxiaoNeural">晓晓 (女声·温柔)</option>
-                    <option value="zh-CN-XiaoyiNeural">晓伊 (女声·活泼)</option>
-                    <option value="zh-CN-YunxiNeural">云希 (男声·活泼)</option>
-                    <option value="zh-CN-YunyangNeural">云扬 (男声·专业)</option>
-                    <option value="zh-CN-YunjianNeural">云健 (男声·成熟)</option>
-                </select>
-            </div>
-            <button type="submit" id="file-btn">一键生成</button>
-        </form>
-    </div>
-
-    <!-- Progress section -->
-    <div class="container" id="progress-section">
-        <h2>生成进度</h2>
-        <div class="progress-header">
-            <div class="spinner" id="spinner"></div>
-            <span id="progress-message">等待中...</span>
+            <h1>播客生成器</h1>
+            <p>将网页、视频或文档一键转换为播客音频</p>
         </div>
-        <div class="file-list" id="file-list" style="display:none">
-            <h3>生成的文件</h3>
-            <div id="file-items"></div>
-        </div>
-    </div>
 
-    <!-- Import RSS section -->
-    <div class="container">
-        <h2>导入外部 RSS 订阅</h2>
-        <p style="color:#666;font-size:14px;margin-top:0">将已有播客 RSS 里的集数导入到本地，统一管理。</p>
-        <form id="import-form">
-            <div class="form-group">
-                <label for="rss_url">RSS 地址:</label>
-                <input type="text" id="rss_url" name="rss_url" placeholder="https://..." required
-                    value="https://TU-Dan.github.io/my-podcast-server/rss.xml">
+        <!-- Generate card -->
+        <div class="card">
+            <div class="card-title">新建一期播客</div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('url')">链接生成</button>
+                <button class="tab" onclick="switchTab('file')">文件生成</button>
             </div>
-            <button type="submit" id="import-btn">导入</button>
-        </form>
-        <div id="import-status" style="margin-top:10px;font-size:14px;display:none"></div>
-    </div>
 
-    <!-- Publish section -->
-    <div class="container">
-        <h2>发布到 GitHub Pages</h2>
-        <p style="color:#666;font-size:14px;margin-top:0">
-            将音频和 RSS 推送到 gh-pages 分支，通过 GitHub Pages 公开托管。<br>
-            需先在 <code>.env</code> 中配置 <code>GITHUB_PAGES_URL</code>，并在 GitHub 仓库设置中开启 Pages（Branch: gh-pages）。
-        </p>
-        <button id="publish-btn" onclick="publishToPages()">一键发布到 GitHub Pages</button>
-        <div id="publish-status" style="margin-top:12px;font-size:14px;display:none"></div>
-    </div>
+            <!-- URL tab -->
+            <div class="tab-panel active" id="tab-url">
+                <form id="url-form">
+                    <div class="form-group">
+                        <label>播客标题</label>
+                        <input type="text" name="title" required placeholder="为这期节目取个名字">
+                    </div>
+                    <div class="form-group">
+                        <label>文章 / 视频链接</label>
+                        <input type="text" name="url" required placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label>主播音色</label>
+                        <select name="voice">
+                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
+                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
+                            <option value="zh-CN-YunxiNeural">云希 — 男声 · 活泼</option>
+                            <option value="zh-CN-YunyangNeural">云扬 — 男声 · 专业</option>
+                            <option value="zh-CN-YunjianNeural">云健 — 男声 · 成熟</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="url-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        开始生成
+                    </button>
+                </form>
+            </div>
 
-    <div class="rss-link">
-        <p>本地 RSS 订阅地址：</p>
-        <a href="/static/podcast.xml" target="_blank">/static/podcast.xml</a>
-        <p><small>将此链接添加到 Apple Podcasts 等客户端</small></p>
+            <!-- File tab -->
+            <div class="tab-panel" id="tab-file">
+                <form id="file-form">
+                    <div class="form-group">
+                        <label>播客标题</label>
+                        <input type="text" name="title" required placeholder="为这期节目取个名字">
+                    </div>
+                    <div class="form-group">
+                        <label>上传文件 <span class="tag">PDF</span><span class="tag">TXT</span></label>
+                        <input type="file" name="file" accept=".pdf,.txt" required>
+                    </div>
+                    <div class="form-group">
+                        <label>主播音色</label>
+                        <select name="voice">
+                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
+                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
+                            <option value="zh-CN-YunxiNeural">云希 — 男声 · 活泼</option>
+                            <option value="zh-CN-YunyangNeural">云扬 — 男声 · 专业</option>
+                            <option value="zh-CN-YunjianNeural">云健 — 男声 · 成熟</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="file-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        开始生成
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Progress card -->
+        <div class="card" id="progress-section">
+            <div class="card-title">生成进度</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-status">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="progress-message">等待中...</span>
+            </div>
+            <div class="file-list" id="file-list">
+                <div class="file-list-title">输出文件</div>
+                <div id="file-items"></div>
+            </div>
+        </div>
+
+        <!-- Tools row -->
+        <div class="card-row">
+            <!-- Script preview -->
+            <div class="card">
+                <div class="card-title">播客文稿</div>
+                <div class="script-empty" id="script-empty">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span>生成完成后在此预览文稿</span>
+                </div>
+                <div class="script-preview-wrap" id="script-preview-wrap">
+                    <div class="script-toolbar">
+                        <span class="script-name" id="script-filename"></span>
+                        <a class="btn-dl" id="script-dl" href="#" download>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            下载
+                        </a>
+                    </div>
+                    <div class="script-body" id="script-body"></div>
+                </div>
+            </div>
+
+            <!-- Publish -->
+            <div class="card">
+                <div class="card-title">发布到 GitHub Pages</div>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+                    推送音频与 RSS 到 gh-pages 分支，通过 GitHub Pages 公开托管。需在 <code style="background:var(--surface-2);padding:1px 5px;border-radius:4px">.env</code> 中配置 <code style="background:var(--surface-2);padding:1px 5px;border-radius:4px">GITHUB_PAGES_URL</code>。
+                </p>
+                <button class="btn btn-secondary" id="publish-btn" onclick="publishToPages()" style="width:100%;justify-content:center">一键发布</button>
+                <div class="action-status" id="publish-status"></div>
+            </div>
+        </div>
+
+        <!-- RSS footer -->
+        <div class="rss-footer">
+            <p>本地 RSS 订阅地址 &nbsp;
+                <a href="/static/podcast.xml" target="_blank">/static/podcast.xml</a>
+            </p>
+            <p style="margin-top:6px;color:#4a4a6a;font-size:12px">将此链接添加到 Apple Podcasts、小宇宙等客户端</p>
+        </div>
     </div>
 
     <script>
-        const FILE_ICONS = {
-            '原始逐字稿': '📄',
-            default: '🎙️'
-        };
-
+        const FILE_ICONS = { '原始逐字稿': '📄', default: '🎙️' };
         let pollTimer = null;
+        let shownScriptUrl = null;
 
+        /* Simple markdown → HTML renderer */
+        function renderMd(md) {
+            return md
+                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n{2,}/g, '</p><p>')
+                .replace(/^(?!<[h|h][r12])(.+)$/gm, (m) => m.startsWith('<') ? m : m)
+                .split('\n').map(line => {
+                    if (line.startsWith('<h') || line.startsWith('<hr')) return line;
+                    return line || '';
+                }).join('\n')
+                .replace(/\n/g, ' ')
+                || md;
+        }
+
+        async function loadScriptPreview(url, label) {
+            if (url === shownScriptUrl) return;
+            shownScriptUrl = url;
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                document.getElementById('script-empty').style.display = 'none';
+                document.getElementById('script-preview-wrap').style.display = 'block';
+                const name = url.split('/').pop();
+                document.getElementById('script-filename').textContent = label || name;
+                const dl = document.getElementById('script-dl');
+                dl.href = url;
+                dl.download = name;
+                // Render markdown
+                const body = document.getElementById('script-body');
+                const lines = text.split('\n');
+                let html = '';
+                for (const line of lines) {
+                    if (/^# /.test(line)) html += `<h1>${line.slice(2)}</h1>`;
+                    else if (/^## /.test(line)) html += `<h2>${line.slice(3)}</h2>`;
+                    else if (/^---$/.test(line)) html += '<hr>';
+                    else if (line.trim() === '') html += '';
+                    else html += `<p>${line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`;
+                }
+                body.innerHTML = html;
+            } catch (e) {
+                console.error('Script load error:', e);
+            }
+        }
+
+        /* Tabs */
+        function switchTab(name) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', (i === 0) === (name === 'url'));
+            });
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+        }
+
+        /* Progress helpers */
         function showProgress() {
-            document.getElementById('progress-section').style.display = 'block';
-            document.getElementById('progress-section').className = 'container';
-            document.getElementById('spinner').classList.remove('hidden');
+            const sec = document.getElementById('progress-section');
+            sec.style.display = 'block';
+            document.getElementById('progress-bar').className = 'progress-bar';
+            document.getElementById('status-dot').className = 'status-dot';
             document.getElementById('file-list').style.display = 'none';
             document.getElementById('file-items').innerHTML = '';
             document.getElementById('progress-message').textContent = '任务已提交，等待处理...';
-            document.getElementById('progress-section').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('progress-message').className = '';
+            // Reset script preview
+            shownScriptUrl = null;
+            document.getElementById('script-empty').style.display = 'flex';
+            document.getElementById('script-preview-wrap').style.display = 'none';
+            document.getElementById('script-body').innerHTML = '';
+            sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function setButtons(disabled) {
@@ -212,15 +696,19 @@
         }
 
         function renderFiles(files) {
-            if (!files || files.length === 0) return;
+            if (!files || !files.length) return;
             const container = document.getElementById('file-items');
             container.innerHTML = '';
             files.forEach(f => {
                 const icon = FILE_ICONS[f.label] || FILE_ICONS.default;
                 const div = document.createElement('div');
                 div.className = 'file-item';
-                div.innerHTML = `<span class="file-icon">${icon}</span><a href="${f.url}" target="_blank">${f.label}</a>`;
+                div.innerHTML = `<span>${icon}</span><a href="${f.url}" target="_blank">${f.label}</a><span class="file-badge">下载</span>`;
                 container.appendChild(div);
+                // Load first script file into preview
+                if (f.label.startsWith('播客文稿')) {
+                    loadScriptPreview(f.url, f.label);
+                }
             });
             document.getElementById('file-list').style.display = 'block';
         }
@@ -231,48 +719,45 @@
                 try {
                     const res = await fetch(`/status/${jobId}`);
                     const data = await res.json();
-
                     document.getElementById('progress-message').textContent = data.message;
                     renderFiles(data.files);
 
                     if (data.status === 'done') {
                         clearInterval(pollTimer);
-                        document.getElementById('spinner').classList.add('hidden');
-                        document.getElementById('progress-section').className = 'container status-done';
+                        document.getElementById('progress-bar').className = 'progress-bar done';
+                        document.getElementById('status-dot').className = 'status-dot done';
+                        document.getElementById('progress-message').className = 'status-done-text';
                         setButtons(false);
                     } else if (data.status === 'error') {
                         clearInterval(pollTimer);
-                        document.getElementById('spinner').classList.add('hidden');
-                        document.getElementById('progress-section').className = 'container status-error';
+                        document.getElementById('progress-bar').className = 'progress-bar error';
+                        document.getElementById('status-dot').className = 'status-dot error';
+                        document.getElementById('progress-message').className = 'status-error-text';
                         setButtons(false);
                     }
-                } catch (e) {
-                    console.error('Poll error:', e);
-                }
+                } catch (e) { console.error('Poll error:', e); }
             }, 2000);
         }
 
         async function submitForm(e, action) {
             e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-
             showProgress();
             setButtons(true);
-
             try {
-                const res = await fetch(action, { method: 'POST', body: formData });
+                const res = await fetch(action, { method: 'POST', body: new FormData(e.target) });
                 const data = await res.json();
                 if (data.job_id) {
                     startPolling(data.job_id);
                 } else {
                     document.getElementById('progress-message').textContent = '提交失败，请重试。';
-                    document.getElementById('spinner').classList.add('hidden');
+                    document.getElementById('progress-bar').className = 'progress-bar error';
+                    document.getElementById('status-dot').className = 'status-dot error';
                     setButtons(false);
                 }
-            } catch (e) {
-                document.getElementById('progress-message').textContent = '提交出错：' + e.message;
-                document.getElementById('spinner').classList.add('hidden');
+            } catch (err) {
+                document.getElementById('progress-message').textContent = '提交出错：' + err.message;
+                document.getElementById('progress-bar').className = 'progress-bar error';
+                document.getElementById('status-dot').className = 'status-dot error';
                 setButtons(false);
             }
         }
@@ -280,59 +765,30 @@
         document.getElementById('url-form').addEventListener('submit', e => submitForm(e, '/generate/url'));
         document.getElementById('file-form').addEventListener('submit', e => submitForm(e, '/generate/file'));
 
-        document.getElementById('import-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const btn = document.getElementById('import-btn');
-            const status = document.getElementById('import-status');
-            btn.disabled = true;
-            btn.textContent = '导入中...';
-            status.style.display = 'block';
-            status.style.color = '#333';
-            status.textContent = '正在读取远端 RSS...';
-            try {
-                const res = await fetch('/import-rss', { method: 'POST', body: new FormData(e.target) });
-                const data = await res.json();
-                if (data.ok) {
-                    status.style.color = '#28a745';
-                    status.textContent = `导入完成：新增 ${data.imported} 集，跳过已有 ${data.skipped} 集。`;
-                } else {
-                    status.style.color = '#dc3545';
-                    status.textContent = '导入失败：' + data.error;
-                }
-            } catch (err) {
-                status.style.color = '#dc3545';
-                status.textContent = '出错：' + err.message;
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '导入';
-            }
-        });
-
         async function publishToPages() {
             const btn = document.getElementById('publish-btn');
             const status = document.getElementById('publish-status');
             btn.disabled = true;
             btn.textContent = '发布中...';
+            status.className = 'action-status';
             status.style.display = 'block';
-            status.style.color = '#333';
-            status.textContent = '正在推送到 GitHub Pages，请稍候...';
-
+            status.textContent = '正在推送到 GitHub Pages...';
             try {
                 const res = await fetch('/publish', { method: 'POST' });
                 const data = await res.json();
                 if (data.ok) {
-                    status.style.color = '#28a745';
-                    status.innerHTML = `发布成功！RSS 订阅地址：<a href="${data.rss_url}" target="_blank">${data.rss_url}</a>`;
+                    status.className = 'action-status success';
+                    status.innerHTML = `发布成功！<a href="${data.rss_url}" target="_blank" style="color:var(--success)">${data.rss_url}</a>`;
                 } else {
-                    status.style.color = '#dc3545';
+                    status.className = 'action-status error';
                     status.textContent = '发布失败：' + data.error;
                 }
-            } catch (e) {
-                status.style.color = '#dc3545';
-                status.textContent = '发布出错：' + e.message;
+            } catch (err) {
+                status.className = 'action-status error';
+                status.textContent = '出错：' + err.message;
             } finally {
                 btn.disabled = false;
-                btn.textContent = '一键发布到 GitHub Pages';
+                btn.textContent = '一键发布';
             }
         }
     </script>
