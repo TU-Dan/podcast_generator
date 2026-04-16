@@ -31,46 +31,76 @@ def extract_from_url(url: str) -> tuple[str, str | None]:
     return text, thumbnail
 
 
-def extract_from_youtube(url: str) -> tuple[str, str | None]:
-    """Extract subtitles and thumbnail from a YouTube video."""
-    ydl_opts = {
+def _ydl_base_opts(tmpdir: str) -> dict:
+    opts = {
         'skip_download': True,
         'writesubtitles': True,
         'writeautomaticsub': True,
-        'subtitleslangs': ['en', 'zh-Hans', 'zh-Hant', 'zh'],
-        'outtmpl': '%(id)s.%(ext)s',
+        'subtitleslangs': ['zh-Hans', 'zh-Hant', 'zh', 'en'],
+        'subtitlesformat': 'vtt',
+        'outtmpl': os.path.join(tmpdir, '%(id)s.%(ext)s'),
         'quiet': True,
+        'no_warnings': True,
         'ignoreerrors': True,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['tv_embedded', 'android', 'web'],
+            }
+        },
     }
+    # Use Chrome cookies if available — bypasses bot detection
+    try:
+        import browser_cookie3  # noqa: F401
+        opts['cookiesfrombrowser'] = ('chrome',)
+    except Exception:
+        pass
+    return opts
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+
+def _parse_vtt(path: str) -> str:
+    """Strip VTT timing/metadata lines, return plain transcript text."""
+    seen = set()
+    lines = []
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or '-->' in line or line.startswith('WEBVTT') or line.isdigit():
+                continue
+            # Strip inline VTT tags like <00:00:01.000><c>text</c>
+            line = re.sub(r'<[^>]+>', '', line)
+            if line and line not in seen:
+                seen.add(line)
+                lines.append(line)
+    return ' '.join(lines)
+
+
+def extract_from_youtube(url: str) -> tuple[str, str | None]:
+    """Extract subtitles (or description) and thumbnail from a YouTube video."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        opts = _ydl_base_opts(tmpdir)
         try:
-            info = ydl.extract_info(url, download=False)
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+
             if not info:
                 return "", None
 
             title = info.get('title', '')
             description = info.get('description', '')
-            thumbnail = info.get('thumbnail')  # best quality thumbnail URL
+            thumbnail = info.get('thumbnail')
 
-            with tempfile.TemporaryDirectory() as tmpdir:
-                ydl_opts['outtmpl'] = os.path.join(tmpdir, '%(id)s.%(ext)s')
-                try:
-                    with yt_dlp.YoutubeDL(ydl_opts) as ydl_temp:
-                        ydl_temp.download([url])
-                except Exception as e:
-                    print(f"Warning: subtitle download failed ({e}), falling back to description.")
+            sub_text = ""
+            for fname in os.listdir(tmpdir):
+                if fname.endswith('.vtt'):
+                    try:
+                        sub_text = _parse_vtt(os.path.join(tmpdir, fname))
+                        if sub_text:
+                            break
+                    except Exception as e:
+                        print(f"Warning: VTT parse error ({e})")
 
-                sub_text = ""
-                for file in os.listdir(tmpdir):
-                    if file.endswith('.vtt') or file.endswith('.srt'):
-                        with open(os.path.join(tmpdir, file), 'r', encoding='utf-8') as f:
-                            for line in f.readlines():
-                                if '-->' not in line and not line.strip().isdigit() and not line.startswith('WEBVTT'):
-                                    sub_text += line.strip() + " "
-
-                text = f"{title}\n\n{sub_text}" if sub_text else f"{title}\n\n{description}"
-                return text, thumbnail
+            text = f"{title}\n\n{sub_text}" if sub_text else f"{title}\n\n{description}"
+            return text.strip(), thumbnail
 
         except Exception as e:
             print(f"Error extracting from YouTube: {e}")
