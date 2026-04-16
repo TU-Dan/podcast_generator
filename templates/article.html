@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d0d14;
+            --surface: #16161f;
+            --surface-2: #1e1e2d;
+            --border: rgba(255,255,255,0.07);
+            --accent: #7c5cfc;
+            --accent-2: #5b8dee;
+            --accent-glow: rgba(124,92,252,0.2);
+            --text: #e8e8f0;
+            --text-muted: #7a7a9a;
+            --success: #34d399;
+            --error: #f87171;
+            --radius-sm: 10px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 20px;
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .toolbar-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .toolbar-back:hover { color: var(--text); }
+        .toolbar-back svg { width: 14px; height: 14px; }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+        }
+
+        .toolbar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toolbar-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+        .btn-save:hover { opacity: 0.88; }
+        .btn-save:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-save svg { width: 13px; height: 13px; }
+
+        .save-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            min-width: 60px;
+            text-align: right;
+        }
+        .save-status.ok { color: var(--success); }
+        .save-status.err { color: var(--error); }
+
+        /* Split pane */
+        .panes {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .pane-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .pane-header svg { width: 13px; height: 13px; }
+
+        /* Resize handle */
+        .resize-handle {
+            width: 4px;
+            background: var(--border);
+            cursor: col-resize;
+            flex-shrink: 0;
+            transition: background 0.15s;
+            position: relative;
+        }
+        .resize-handle:hover,
+        .resize-handle.dragging { background: var(--accent); }
+
+        /* Editor */
+        .editor {
+            flex: 1;
+            resize: none;
+            border: none;
+            outline: none;
+            background: #0f0f18;
+            color: #c9d1e0;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Menlo, monospace;
+            font-size: 13.5px;
+            line-height: 1.75;
+            padding: 24px 28px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        .editor::-webkit-scrollbar { width: 5px; }
+        .editor::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Preview */
+        .preview {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 40px;
+            background: var(--bg);
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        .preview::-webkit-scrollbar { width: 5px; }
+        .preview::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Prose styles for preview */
+        .preview h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .preview h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 28px 0 10px;
+        }
+        .preview h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin: 20px 0 8px;
+        }
+        .preview p {
+            font-size: 15px;
+            line-height: 1.85;
+            color: #c8c8d8;
+            margin-bottom: 16px;
+        }
+        .preview strong { color: var(--text); font-weight: 600; }
+        .preview em { color: #a8a8c0; font-style: italic; }
+        .preview hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 24px 0;
+        }
+        .preview blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 4px 16px;
+            margin: 16px 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        .preview code {
+            background: var(--surface-2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'SF Mono', Menlo, monospace;
+            color: #a8d8ea;
+        }
+        .preview pre {
+            background: var(--surface-2);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+        .preview pre code {
+            background: none;
+            padding: 0;
+        }
+        .preview ul, .preview ol {
+            padding-left: 24px;
+            margin-bottom: 16px;
+        }
+        .preview li {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #c8c8d8;
+            margin-bottom: 4px;
+        }
+
+        /* word count */
+        .wc-chip {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+    <a class="toolbar-back" href="/">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        知识库
+    </a>
+    <div class="toolbar-divider"></div>
+    <span class="toolbar-title">{{ article.title }}</span>
+    <span class="toolbar-meta" id="toolbar-meta">{{ article.created_at[:10] if article.created_at else '' }}</span>
+    <span class="save-status" id="save-status"></span>
+    <button class="btn-save" id="save-btn" onclick="saveContent()">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        保存
+    </button>
+</div>
+
+<!-- Panes -->
+<div class="panes" id="panes">
+    <!-- Left: editor -->
+    <div class="pane" id="pane-left">
+        <div class="pane-header">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            源码
+            <span class="wc-chip" id="wc-chip"></span>
+        </div>
+        <textarea class="editor" id="editor" spellcheck="false"></textarea>
+    </div>
+
+    <!-- Resize handle -->
+    <div class="resize-handle" id="resize-handle"></div>
+
+    <!-- Right: preview -->
+    <div class="pane" id="pane-right">
+        <div class="pane-header">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            预览
+        </div>
+        <div class="preview" id="preview"></div>
+    </div>
+</div>
+
+<script>
+    const ARTICLE_ID = '{{ article.id }}';
+    let dirty = false;
+    let saveTimer = null;
+
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+
+    // Configure marked
+    marked.setOptions({ breaks: true, gfm: true });
+
+    function renderPreview(md) {
+        preview.innerHTML = marked.parse(md);
+    }
+
+    function updateWc(text) {
+        const wc = text.replace(/\s+/g, '').length;
+        document.getElementById('wc-chip').textContent = wc.toLocaleString() + ' 字';
+    }
+
+    function markDirty() {
+        dirty = true;
+        document.getElementById('save-status').textContent = '未保存';
+        document.getElementById('save-status').className = 'save-status';
+        // Auto-save after 2s idle
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveContent, 2000);
+    }
+
+    editor.addEventListener('input', () => {
+        renderPreview(editor.value);
+        updateWc(editor.value);
+        markDirty();
+    });
+
+    async function saveContent() {
+        if (!dirty) return;
+        clearTimeout(saveTimer);
+        const btn = document.getElementById('save-btn');
+        const status = document.getElementById('save-status');
+        btn.disabled = true;
+        status.textContent = '保存中...';
+        status.className = 'save-status';
+        try {
+            const res = await fetch(`/api/articles/${ARTICLE_ID}/content`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: editor.value }),
+            });
+            const data = await res.json();
+            if (data.ok) {
+                dirty = false;
+                status.textContent = '已保存';
+                status.className = 'save-status ok';
+                setTimeout(() => { if (!dirty) status.textContent = ''; }, 2000);
+            } else {
+                status.textContent = '保存失败';
+                status.className = 'save-status err';
+            }
+        } catch (e) {
+            status.textContent = '保存出错';
+            status.className = 'save-status err';
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // Ctrl/Cmd+S to save
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveContent();
+        }
+    });
+
+    // Resizable panes
+    const handle = document.getElementById('resize-handle');
+    const panes  = document.getElementById('panes');
+    const left   = document.getElementById('pane-left');
+    const right  = document.getElementById('pane-right');
+    let dragging = false;
+
+    handle.addEventListener('mousedown', e => {
+        dragging = true;
+        handle.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const rect = panes.getBoundingClientRect();
+        const ratio = (e.clientX - rect.left) / rect.width;
+        const clamped = Math.min(Math.max(ratio, 0.2), 0.8);
+        left.style.flex = 'none';
+        left.style.width = (clamped * 100) + '%';
+        right.style.flex = '1';
+        right.style.width = 'auto';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+    });
+
+    // Load content
+    async function loadContent() {
+        try {
+            const res = await fetch(`/api/articles/${ARTICLE_ID}/content`);
+            const data = await res.json();
+            if (data.content !== undefined) {
+                editor.value = data.content;
+                renderPreview(data.content);
+                updateWc(data.content);
+            }
+        } catch (e) {
+            preview.innerHTML = '<p style="color:var(--error)">加载失败：' + e.message + '</p>';
+        }
+    }
+
+    loadContent();
+</script>
+</body>
+</html>

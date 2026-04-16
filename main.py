@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Form, File, UploadFile, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,9 +18,16 @@ from services.extractor import extract_content
 from services.llm import distill_and_translate, chunk_text, polish_chunk, detect_language, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
 from services.rss import add_episode, clean_description
-from services.importer import import_from_rss
+from services.db import init_db, add_article
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -111,6 +119,8 @@ def save_script(title: str, script: str, part_label: str = "") -> str:
 def process_content_task(job_id: str, source: str, source_type: str, title: str, base_url: str, voice: str):
     print(f"[{job_id}] Starting: {title}")
 
+    source_url = source if source_type in ("url", "youtube") else None
+
     try:
         # 1. Extract text + thumbnail
         update_job(job_id, "extracting", "正在提取内容...")
@@ -147,13 +157,28 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
 
             audio_filename = generate_audio_sync(script, voice=voice)
             audio_path = os.path.join("static/audio", audio_filename)
+            audio_url = f"{base_url}/static/audio/{audio_filename}"
+            audio_length = os.path.getsize(audio_path)
+
             add_episode(
                 title=title,
                 description=clean_description(text[:300]) + "...",
                 audio_filename=audio_filename,
-                audio_length=os.path.getsize(audio_path),
+                audio_length=audio_length,
                 base_url=base_url,
-                episode_image=episode_image
+                episode_image=episode_image,
+            )
+            add_article(
+                title=title,
+                source_url=source_url,
+                source_type=source_type,
+                summary=clean_description(text[:300]) + "...",
+                article_md_path=script_url,
+                transcript_path=transcript_url,
+                audio_url=audio_url,
+                audio_length=audio_length,
+                image_url=episode_image,
+                word_count=len(script),
             )
 
         else:
@@ -164,6 +189,7 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
             for i, chunk in enumerate(chunks):
                 part_label = f"第{i + 1}段_共{total}段"
                 part_display = f"（第{i + 1}段/共{total}段）"
+                part_title = f"{title} {part_display}"
 
                 update_job(job_id, "processing", f"正在处理第 {i + 1}/{total} 段...")
                 polished = polish_chunk(chunk, i, total)
@@ -179,17 +205,51 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
 
                 audio_filename = generate_audio_sync(polished, voice=voice)
                 audio_path = os.path.join("static/audio", audio_filename)
+                audio_url = f"{base_url}/static/audio/{audio_filename}"
+                audio_length = os.path.getsize(audio_path)
+
                 add_episode(
-                    title=f"{title} {part_display}",
+                    title=part_title,
                     description=clean_description(chunk[:300]) + "...",
                     audio_filename=audio_filename,
-                    audio_length=os.path.getsize(audio_path),
+                    audio_length=audio_length,
                     base_url=base_url,
-                    episode_image=episode_image
+                    episode_image=episode_image,
+                )
+                add_article(
+                    title=part_title,
+                    source_url=source_url,
+                    source_type=source_type,
+                    summary=clean_description(chunk[:300]) + "...",
+                    article_md_path=script_url,
+                    transcript_path=transcript_url,
+                    audio_url=audio_url,
+                    audio_length=audio_length,
+                    image_url=episode_image,
+                    word_count=len(polished),
                 )
 
-        update_job(job_id, "done", f"全部完成！共生成 {len(jobs[job_id]['files'])} 个文件。")
+        file_count = len(jobs[job_id]['files'])
         print(f"[{job_id}] Finished: {title}")
+
+        # Auto-publish to GitHub Pages if configured
+        if os.getenv("GITHUB_PAGES_URL"):
+            update_job(job_id, "publishing", f"内容生成完成，正在发布到 GitHub Pages...")
+            try:
+                result = subprocess.run(
+                    ["python3", "scripts/publish_to_pages.py"],
+                    capture_output=True, text=True, timeout=120
+                )
+                if result.returncode == 0:
+                    update_job(job_id, "done", f"全部完成！已发布到 GitHub Pages。")
+                else:
+                    update_job(job_id, "done", f"生成完成，但发布失败：{result.stderr or result.stdout}")
+            except subprocess.TimeoutExpired:
+                update_job(job_id, "done", "生成完成，发布超时，请手动发布。")
+            except Exception as e:
+                update_job(job_id, "done", f"生成完成，发布出错：{e}")
+        else:
+            update_job(job_id, "done", f"全部完成！共生成 {file_count} 个文件。")
 
     except Exception as e:
         print(f"[{job_id}] Error: {e}")
@@ -202,19 +262,75 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                 pass
 
 
+# --- Routes ---
+
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def library(request: Request):
+    return templates.TemplateResponse(request=request, name="library.html")
+
+
+@app.get("/generate", response_class=HTMLResponse)
+async def generate_page(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
-@app.post("/import-rss")
-async def import_rss(request: Request, rss_url: str = Form(...)):
-    base_url = str(request.base_url).rstrip("/")
+@app.get("/api/articles")
+async def api_articles(source_type: str = None, q: str = None, limit: int = 100, offset: int = 0):
+    from services.db import list_articles, count_by_type
+    articles = list_articles(source_type=source_type, query=q, limit=limit, offset=offset)
+    counts = count_by_type()
+    return JSONResponse({"articles": articles, "counts": counts})
+
+
+@app.get("/article/{article_id}", response_class=HTMLResponse)
+async def article_page(request: Request, article_id: str):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article:
+        return HTMLResponse("Not found", status_code=404)
+    return templates.TemplateResponse(request=request, name="article.html", context={"article": article})
+
+
+@app.get("/api/articles/{article_id}")
+async def api_article(article_id: str):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article:
+        return JSONResponse({"error": "not found"}, status_code=404)
+    return JSONResponse(article)
+
+
+@app.get("/api/articles/{article_id}/content")
+async def get_article_content(article_id: str):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    # article_md_path is like /static/scripts/foo.md — strip leading /
+    file_path = article["article_md_path"].lstrip("/")
     try:
-        imported, skipped = import_from_rss(rss_url, base_url)
-        return JSONResponse({"ok": True, "imported": imported, "skipped": skipped})
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return JSONResponse({"content": content})
+    except FileNotFoundError:
+        return JSONResponse({"error": "file not found"}, status_code=404)
+
+
+@app.post("/api/articles/{article_id}/content")
+async def save_article_content(article_id: str, request: Request):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    file_path = article["article_md_path"].lstrip("/")
+    body = await request.json()
+    content = body.get("content", "")
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return JSONResponse({"ok": True})
     except Exception as e:
-        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @app.post("/publish")
