@@ -1,3 +1,4 @@
+import threading
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Form, File, UploadFile, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -14,16 +15,37 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from curl_cffi import requests as cffi_requests
-from services.extractor import extract_content
-from services.llm import distill_and_translate, chunk_text, polish_chunk, detect_language, CHUNK_THRESHOLD
+from services.extractor import extract_content, download_youtube_audio
+from services.llm import distill_and_translate, format_transcript, chunk_text, polish_chunk, detect_language, generate_tags, generate_title, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
 from services.rss import add_episode, clean_description
-from services.db import init_db, add_article
+from services.db import init_db, add_article, update_tags, get_untagged_articles
+
+
+def _retag_untagged():
+    """Background thread: generate tags for articles that have none."""
+    articles = get_untagged_articles()
+    if not articles:
+        return
+    print(f"[retag] Found {len(articles)} untagged articles, generating tags...")
+    for a in articles:
+        path = a["article_md_path"].lstrip("/")
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+        except FileNotFoundError:
+            continue
+        tags = generate_tags(a["title"], content[:2000])
+        if tags:
+            update_tags(a["id"], tags)
+            print(f"[retag] {a['title'][:30]} → {tags}")
+    print("[retag] Done.")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    threading.Thread(target=_retag_untagged, daemon=True).start()
     yield
 
 
@@ -51,16 +73,20 @@ def sanitize_filename(title: str) -> str:
 
 def download_thumbnail(thumbnail_url: str) -> str | None:
     """Download remote thumbnail to static/images/. Returns local URL path."""
+    import urllib.request
     os.makedirs("static/images", exist_ok=True)
     try:
-        r = cffi_requests.get(thumbnail_url, timeout=5, impersonate="chrome")
-        r.raise_for_status()
-        content_type = r.headers.get("content-type", "image/jpeg").lower()
-        ext = "png" if "png" in content_type else "jpg"
-        filename = f"{uuid.uuid4().hex}.{ext}"
-        path = os.path.join("static/images", filename)
-        with open(path, "wb") as f:
-            f.write(r.content)
+        req = urllib.request.Request(
+            thumbnail_url,
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            content_type = resp.headers.get_content_type() or "image/jpeg"
+            ext = "png" if "png" in content_type else "jpg"
+            filename = f"{uuid.uuid4().hex}.{ext}"
+            path = os.path.join("static/images", filename)
+            with open(path, "wb") as f:
+                f.write(resp.read())
         return f"/static/images/{filename}"
     except Exception as e:
         print(f"Failed to download thumbnail: {e}")
@@ -116,9 +142,7 @@ def save_script(title: str, script: str, part_label: str = "") -> str:
     return f"/static/scripts/{filename}"
 
 
-def process_content_task(job_id: str, source: str, source_type: str, title: str, base_url: str, voice: str):
-    print(f"[{job_id}] Starting: {title}")
-
+def process_content_task(job_id: str, source: str, source_type: str, title: str, base_url: str, voice: str, use_original_audio: bool = False):
     source_url = source if source_type in ("url", "youtube") else None
 
     try:
@@ -128,6 +152,14 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
         if not text:
             update_job(job_id, "error", "内容提取失败，请检查链接或文件。")
             return
+
+        # Auto-generate title if not provided
+        if not title.strip():
+            update_job(job_id, "extracting", "正在生成标题...")
+            title = generate_title(text)
+            jobs[job_id]["title"] = title
+
+        print(f"[{job_id}] Starting: {title}")
 
         # Download thumbnail if available
         episode_image = None
@@ -141,21 +173,27 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
             "url": transcript_url
         })
 
-        # 3. LLM + TTS
-        if len(text) <= CHUNK_THRESHOLD:
-            update_job(job_id, "processing", "正在使用 DeepSeek 处理内容...")
-            script = distill_and_translate(text)
-            if not script:
+        # 3. LLM processing + audio
+        if use_original_audio and source_type == "youtube":
+            # Structure the transcript without losing content, then use original audio
+            update_job(job_id, "processing", "正在整理文字稿...")
+            result = format_transcript(text)
+            if not result:
                 update_job(job_id, "error", "LLM 处理失败，请检查 API Key。")
                 return
+            script, tags = result
 
             script_url = save_script(title, script)
-            update_job(job_id, "generating_audio", "正在生成音频...", file={
+            update_job(job_id, "generating_audio", "正在下载原始音频...", file={
                 "label": "播客文稿",
                 "url": script_url
             })
+            audio_filename = download_youtube_audio(source)
+            if not audio_filename:
+                update_job(job_id, "error", "原始音频下载失败，请检查链接。")
+                return
+            audio_mime = "audio/mpeg"
 
-            audio_filename = generate_audio_sync(script, voice=voice)
             audio_path = os.path.join("static/audio", audio_filename)
             audio_url = f"{base_url}/static/audio/{audio_filename}"
             audio_length = os.path.getsize(audio_path)
@@ -167,8 +205,9 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                 audio_length=audio_length,
                 base_url=base_url,
                 episode_image=episode_image,
+                audio_mime=audio_mime,
             )
-            add_article(
+            article_id = add_article(
                 title=title,
                 source_url=source_url,
                 source_type=source_type,
@@ -180,12 +219,65 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                 image_url=episode_image,
                 word_count=len(script),
             )
+            if tags:
+                update_tags(article_id, tags)
+
+        elif len(text) <= CHUNK_THRESHOLD:
+            update_job(job_id, "processing", "正在使用 DeepSeek 处理内容...")
+            result = distill_and_translate(text)
+            if not result:
+                update_job(job_id, "error", "LLM 处理失败，请检查 API Key。")
+                return
+            script, tags = result
+
+            script_url = save_script(title, script)
+            update_job(job_id, "generating_audio", "正在生成音频...", file={
+                "label": "播客文稿",
+                "url": script_url
+            })
+            audio_filename = generate_audio_sync(script, voice=voice)
+            audio_mime = "audio/mpeg"
+
+            audio_path = os.path.join("static/audio", audio_filename)
+            audio_url = f"{base_url}/static/audio/{audio_filename}"
+            audio_length = os.path.getsize(audio_path)
+
+            add_episode(
+                title=title,
+                description=clean_description(text[:300]) + "...",
+                audio_filename=audio_filename,
+                audio_length=audio_length,
+                base_url=base_url,
+                episode_image=episode_image,
+                audio_mime=audio_mime,
+            )
+            article_id = add_article(
+                title=title,
+                source_url=source_url,
+                source_type=source_type,
+                summary=clean_description(text[:300]) + "...",
+                article_md_path=script_url,
+                transcript_path=transcript_url,
+                audio_url=audio_url,
+                audio_length=audio_length,
+                image_url=episode_image,
+                word_count=len(script),
+            )
+            if tags:
+                update_tags(article_id, tags)
+                print(f"[{job_id}] Tags: {tags}")
 
         else:
             chunks = chunk_text(text)
             total = len(chunks)
             update_job(job_id, "processing", f"内容较长，分为 {total} 段处理...")
 
+            # Generate tags once from title + first chunk sample
+            tags = generate_tags(title, chunks[0])
+            if tags:
+                print(f"[{job_id}] Tags (chunked): {tags}")
+
+            article_ids = []
             for i, chunk in enumerate(chunks):
                 part_label = f"第{i + 1}段_共{total}段"
                 part_display = f"（第{i + 1}段/共{total}段）"
@@ -216,7 +308,7 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                     base_url=base_url,
                     episode_image=episode_image,
                 )
-                add_article(
+                article_id = add_article(
                     title=part_title,
                     source_url=source_url,
                     source_type=source_type,
@@ -228,6 +320,12 @@ def process_content_task(job_id: str, source: str, source_type: str, title: str,
                     image_url=episode_image,
                     word_count=len(polished),
                 )
+                article_ids.append(article_id)
+
+            # Apply same tags to all parts
+            if tags:
+                for aid in article_ids:
+                    update_tags(aid, tags)
 
         file_count = len(jobs[job_id]['files'])
         print(f"[{job_id}] Finished: {title}")
@@ -316,6 +414,17 @@ async def get_article_content(article_id: str):
         return JSONResponse({"error": "file not found"}, status_code=404)
 
 
+@app.put("/api/articles/{article_id}/tags")
+async def save_article_tags(article_id: str, request: Request):
+    from services.db import get_article, update_tags
+    if not get_article(article_id):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    body = await request.json()
+    tags = body.get("tags", [])
+    update_tags(article_id, tags)
+    return JSONResponse({"ok": True})
+
+
 @app.post("/api/articles/{article_id}/content")
 async def save_article_content(article_id: str, request: Request):
     from services.db import get_article
@@ -366,14 +475,15 @@ async def generate_from_url(
     background_tasks: BackgroundTasks,
     request: Request,
     url: str = Form(...),
-    title: str = Form(...),
-    voice: str = Form("zh-CN-XiaoxiaoNeural")
+    title: str = Form(""),
+    voice: str = Form("zh-CN-YunxiNeural"),
+    use_original_audio: bool = Form(False),
 ):
     job_id = uuid.uuid4().hex
     jobs[job_id] = {"status": "pending", "message": "任务已提交，等待处理...", "files": []}
     source_type = 'youtube' if 'youtube.com' in url or 'youtu.be' in url else 'url'
     base_url = str(request.base_url).rstrip('/')
-    background_tasks.add_task(process_content_task, job_id, url, source_type, title, base_url, voice)
+    background_tasks.add_task(process_content_task, job_id, url, source_type, title, base_url, voice, use_original_audio)
     return JSONResponse({"job_id": job_id})
 
 
@@ -382,8 +492,8 @@ async def generate_from_file(
     background_tasks: BackgroundTasks,
     request: Request,
     file: UploadFile = File(...),
-    title: str = Form(...),
-    voice: str = Form("zh-CN-XiaoxiaoNeural")
+    title: str = Form(""),
+    voice: str = Form("zh-CN-YunxiNeural")
 ):
     temp_dir = "temp_uploads"
     os.makedirs(temp_dir, exist_ok=True)

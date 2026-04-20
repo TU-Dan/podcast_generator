@@ -1,6 +1,8 @@
 import os
 import re
+import shutil
 import tempfile
+import uuid
 import yt_dlp
 import trafilatura
 from PyPDF2 import PdfReader
@@ -129,6 +131,44 @@ def extract_from_txt(file_path: str) -> tuple[str, None]:
     except Exception as e:
         print(f"Error reading TXT: {e}")
         return "", None
+
+
+def download_youtube_audio(url: str, out_dir: str = "static/audio") -> str | None:
+    """Download YouTube audio in best available format (no ffmpeg needed).
+    Returns filename or None."""
+    os.makedirs(out_dir, exist_ok=True)
+    out_name = uuid.uuid4().hex
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        dest_name = f"{out_name}.mp3"
+        opts = {
+            "format": "bestaudio/best",
+            "outtmpl": os.path.join(tmpdir, f"{out_name}.%(ext)s"),
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "128",
+            }],
+            "quiet": True,
+            "no_warnings": True,
+            "retries": 3,
+            "fragment_retries": 3,
+        }
+        try:
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                ydl.download([url])
+        except Exception as e:
+            print(f"Audio download failed: {e}")
+            return None
+
+        mp3_path = os.path.join(tmpdir, dest_name)
+        if os.path.exists(mp3_path):
+            shutil.copy(mp3_path, os.path.join(out_dir, dest_name))
+            print(f"Audio saved: {dest_name}")
+            return dest_name
+
+    print("Audio download: no output file found")
+    return None
 
 
 def extract_content(source: str, source_type: str = 'url') -> tuple[str, str | None]:

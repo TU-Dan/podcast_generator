@@ -509,21 +509,28 @@
             <div class="tab-panel active" id="tab-url">
                 <form id="url-form">
                     <div class="form-group">
-                        <label>播客标题</label>
-                        <input type="text" name="title" required placeholder="为这期节目取个名字">
+                        <label>播客标题 <span style="color:var(--text-muted);font-weight:400">（留空自动生成）</span></label>
+                        <input type="text" name="title" placeholder="留空则由 AI 自动生成">
                     </div>
                     <div class="form-group">
                         <label>文章 / 视频链接</label>
                         <input type="text" name="url" required placeholder="https://...">
                     </div>
-                    <div class="form-group">
+                    <!-- Original audio toggle (YouTube only) -->
+                    <div class="form-group" id="original-audio-group" style="display:none">
+                        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:500">
+                            <input type="checkbox" name="use_original_audio" id="use-original-audio" value="true" style="width:auto;accent-color:var(--accent)" onchange="toggleVoice(this.checked)">
+                            使用原始音频（不生成 TTS，直接用 YouTube 音频）
+                        </label>
+                    </div>
+                    <div class="form-group" id="voice-group-url">
                         <label>主播音色</label>
                         <select name="voice">
-                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
-                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
-                            <option value="zh-CN-YunxiNeural">云希 — 男声 · 活泼</option>
+                            <option value="zh-CN-YunxiNeural" selected>云希 — 男声 · 活泼</option>
                             <option value="zh-CN-YunyangNeural">云扬 — 男声 · 专业</option>
                             <option value="zh-CN-YunjianNeural">云健 — 男声 · 成熟</option>
+                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
+                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary" id="url-btn">
@@ -537,8 +544,8 @@
             <div class="tab-panel" id="tab-file">
                 <form id="file-form">
                     <div class="form-group">
-                        <label>播客标题</label>
-                        <input type="text" name="title" required placeholder="为这期节目取个名字">
+                        <label>播客标题 <span style="color:var(--text-muted);font-weight:400">（留空自动生成）</span></label>
+                        <input type="text" name="title" placeholder="留空则由 AI 自动生成">
                     </div>
                     <div class="form-group">
                         <label>上传文件 <span class="tag">PDF</span><span class="tag">TXT</span></label>
@@ -547,11 +554,11 @@
                     <div class="form-group">
                         <label>主播音色</label>
                         <select name="voice">
-                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
-                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
-                            <option value="zh-CN-YunxiNeural">云希 — 男声 · 活泼</option>
+                            <option value="zh-CN-YunxiNeural" selected>云希 — 男声 · 活泼</option>
                             <option value="zh-CN-YunyangNeural">云扬 — 男声 · 专业</option>
                             <option value="zh-CN-YunjianNeural">云健 — 男声 · 成熟</option>
+                            <option value="zh-CN-XiaoxiaoNeural">晓晓 — 女声 · 温柔</option>
+                            <option value="zh-CN-XiaoyiNeural">晓伊 — 女声 · 活泼</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary" id="file-btn">
@@ -758,6 +765,20 @@
                 document.getElementById('status-dot').className = 'status-dot error';
                 setButtons(false);
             }
+        }
+
+        // Show "use original audio" toggle only for YouTube URLs
+        document.querySelector('#url-form input[name="url"]').addEventListener('input', function() {
+            const isYT = /youtube\.com|youtu\.be/.test(this.value);
+            document.getElementById('original-audio-group').style.display = isYT ? 'block' : 'none';
+            if (!isYT) {
+                document.getElementById('use-original-audio').checked = false;
+                toggleVoice(false);
+            }
+        });
+
+        function toggleVoice(useOriginal) {
+            document.getElementById('voice-group-url').style.display = useOriginal ? 'none' : 'block';
         }
 
         document.getElementById('url-form').addEventListener('submit', e => submitForm(e, '/generate/url'));

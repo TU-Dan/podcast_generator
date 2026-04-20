@@ -107,6 +107,51 @@
         .save-status.ok { color: var(--success); }
         .save-status.err { color: var(--error); }
 
+        .tag-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(124,92,252,0.3);
+        }
+
+        .tag-pill button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+            padding: 0;
+            opacity: 0.6;
+        }
+        .tag-pill button:hover { opacity: 1; }
+
+        .tag-input {
+            font-size: 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text);
+            padding: 2px 10px;
+            outline: none;
+            width: 90px;
+            transition: border-color 0.15s, width 0.2s;
+        }
+        .tag-input:focus { border-color: var(--accent); width: 120px; }
+        .tag-input::placeholder { color: var(--text-muted); }
+
         /* Split pane */
         .panes {
             display: flex;
@@ -276,6 +321,7 @@
     <div class="toolbar-divider"></div>
     <span class="toolbar-title">{{ article.title }}</span>
     <span class="toolbar-meta" id="toolbar-meta">{{ article.created_at[:10] if article.created_at else '' }}</span>
+    <div class="tag-row" id="tag-row"></div>
     <span class="save-status" id="save-status"></span>
     <button class="btn-save" id="save-btn" onclick="saveContent()">
         <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -416,6 +462,60 @@
         document.body.style.userSelect = '';
     });
 
+    // Tags
+    let currentTags = [];
+
+    function renderTags() {
+        const row = document.getElementById('tag-row');
+        row.innerHTML = currentTags.map((t, i) =>
+            `<span class="tag-pill">${t}<button onclick="removeTag(${i})" title="删除">×</button></span>`
+        ).join('');
+        // Add input
+        const input = document.createElement('input');
+        input.className = 'tag-input';
+        input.placeholder = '+ 标签';
+        input.maxLength = 12;
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = input.value.trim().replace(/[,，]/g, '');
+                if (val && !currentTags.includes(val) && currentTags.length < 8) {
+                    currentTags.push(val);
+                    saveTags();
+                    renderTags();
+                } else {
+                    input.value = '';
+                }
+            }
+        });
+        row.appendChild(input);
+    }
+
+    function removeTag(i) {
+        currentTags.splice(i, 1);
+        saveTags();
+        renderTags();
+    }
+
+    async function saveTags() {
+        try {
+            await fetch(`/api/articles/${ARTICLE_ID}/tags`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tags: currentTags }),
+            });
+        } catch (e) { console.error('Tag save error:', e); }
+    }
+
+    async function loadTags() {
+        try {
+            const res = await fetch(`/api/articles/${ARTICLE_ID}`);
+            const data = await res.json();
+            currentTags = JSON.parse(data.tags || '[]');
+        } catch (e) { currentTags = []; }
+        renderTags();
+    }
+
     // Load content
     async function loadContent() {
         try {
@@ -432,6 +532,7 @@
     }
 
     loadContent();
+    loadTags();
 </script>
 </body>
 </html>

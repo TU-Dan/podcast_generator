@@ -59,7 +59,8 @@ def _build_feed(base_url: str, episodes: list, self_url: str = None) -> object:
         desc = clean_description(ep.get('description', ''))
         fe.description(desc)
         fe.podcast.itunes_summary(desc)
-        fe.enclosure(ep['audio_url'], str(ep['audio_length']), 'audio/mpeg')
+        mime = ep.get('audio_mime', 'audio/mpeg')
+        fe.enclosure(ep['audio_url'], str(ep['audio_length']), mime)
         fe.published(ep['published'])
         fe.podcast.itunes_explicit('no')
         if ep.get('episode_image'):
@@ -100,7 +101,8 @@ def generate_rss_for_export(pages_base_url: str, output_path: str):
 
 
 def add_episode(title: str, description: str, audio_filename: str, audio_length: int,
-                base_url: str = "http://localhost:8000", episode_image: str = None):
+                base_url: str = "http://localhost:8000", episode_image: str = None,
+                audio_mime: str = None):
     episodes = load_episodes()
     audio_url = f"{base_url}/static/audio/{audio_filename}"
 
@@ -110,6 +112,7 @@ def add_episode(title: str, description: str, audio_filename: str, audio_length:
         "audio_url": audio_url,
         "audio_length": audio_length,
         "published": datetime.now(timezone.utc).isoformat(),
+        "audio_mime": audio_mime or "audio/mpeg",
     }
     if episode_image:
         ep["episode_image"] = episode_image

@@ -180,6 +180,38 @@ def get_article(article_id: str) -> dict | None:
     return dict(row) if row else None
 
 
+def get_untagged_articles() -> list[dict]:
+    """Return articles that have no tags and have a script file."""
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM articles WHERE (tags IS NULL OR tags = '[]') AND article_md_path IS NOT NULL"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def update_tags(article_id: str, tags: list[str]):
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE articles SET tags=? WHERE id=?",
+            (json.dumps(tags, ensure_ascii=False), article_id)
+        )
+        conn.commit()
+
+
+def list_all_tags() -> list[str]:
+    """Return all distinct tags across all articles, sorted by frequency."""
+    with get_conn() as conn:
+        rows = conn.execute("SELECT tags FROM articles WHERE tags IS NOT NULL AND tags != '[]'").fetchall()
+    freq: dict[str, int] = {}
+    for row in rows:
+        try:
+            for tag in json.loads(row[0]):
+                freq[tag] = freq.get(tag, 0) + 1
+        except Exception:
+            pass
+    return sorted(freq, key=lambda t: -freq[t])
+
+
 def count_by_type() -> dict:
     with get_conn() as conn:
         rows = conn.execute(

@@ -4,7 +4,7 @@ import os
 import re
 import uuid
 
-DEFAULT_VOICE = "zh-CN-XiaoxiaoNeural"
+DEFAULT_VOICE = "zh-CN-YunxiNeural"
 
 VOICES = {
     "zh-CN-XiaoxiaoNeural": "晓晓 (女声·温柔)",

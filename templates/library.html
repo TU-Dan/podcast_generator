@@ -362,6 +362,27 @@
         .card-read-link:hover { background: rgba(124,92,252,0.3); }
         .card-read-link svg { width: 11px; height: 11px; }
 
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 4px;
+        }
+
+        .tag-chip {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--surface-2);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .tag-chip:hover { border-color: var(--accent); color: var(--accent); }
+
         /* Loading */
         .loading {
             display: flex;
@@ -506,6 +527,12 @@
                </a>`
             : '';
 
+        let tags = [];
+        try { tags = JSON.parse(a.tags || '[]'); } catch(e) {}
+        const tagsHtml = tags.length
+            ? `<div class="card-tags">${tags.map(t => `<span class="tag-chip" onclick="filterByTag(event,'${t}')">${t}</span>`).join('')}</div>`
+            : '';
+
         return `<div class="card">
             ${thumb}${placeholder}
             <div class="card-body">
@@ -515,6 +542,7 @@
                 </div>
                 <div class="card-title">${a.title}</div>
                 <div class="card-summary">${a.summary || ''}</div>
+                ${tagsHtml}
                 <div class="card-footer">
                     ${wc}
                     ${readLink}
@@ -552,6 +580,14 @@
         btn.classList.add('active');
         currentType = type;
         load(type, document.getElementById('search-input').value.trim());
+    }
+
+    function filterByTag(e, tag) {
+        e.preventDefault();
+        e.stopPropagation();
+        const input = document.getElementById('search-input');
+        input.value = tag;
+        onSearch(tag);
     }
 
     function onSearch(val) {
