@@ -153,24 +153,33 @@ def add_article(
     return article_id
 
 
-def list_articles(source_type: str = None, query: str = None, limit: int = 100, offset: int = 0) -> list[dict]:
+def list_articles(source_type: str = None, query: str = None, tags: list[str] = None, limit: int = 100, offset: int = 0) -> list[dict]:
     with get_conn() as conn:
+        conditions = []
+        params = []
+
         if query:
+            conditions.append("(a.title LIKE ? OR a.summary LIKE ?)")
             pattern = f"%{query}%"
-            rows = conn.execute(
-                "SELECT * FROM articles WHERE title LIKE ? OR summary LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-                (pattern, pattern, limit, offset),
-            ).fetchall()
-        elif source_type:
-            rows = conn.execute(
-                "SELECT * FROM articles WHERE source_type=? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-                (source_type, limit, offset),
-            ).fetchall()
-        else:
-            rows = conn.execute(
-                "SELECT * FROM articles ORDER BY created_at DESC LIMIT ? OFFSET ?",
-                (limit, offset),
-            ).fetchall()
+            params.extend([pattern, pattern])
+
+        if source_type:
+            conditions.append("a.source_type = ?")
+            params.append(source_type)
+
+        if tags:
+            placeholders = ",".join("?" * len(tags))
+            conditions.append(
+                f"(SELECT COUNT(DISTINCT je.value) FROM json_each(a.tags) je WHERE je.value IN ({placeholders})) = ?"
+            )
+            params.extend(tags)
+            params.append(len(tags))
+
+        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        rows = conn.execute(
+            f"SELECT a.* FROM articles a {where} ORDER BY a.created_at DESC LIMIT ? OFFSET ?",
+            (*params, limit, offset),
+        ).fetchall()
     return [dict(r) for r in rows]
 
 
@@ -198,8 +207,8 @@ def update_tags(article_id: str, tags: list[str]):
         conn.commit()
 
 
-def list_all_tags() -> list[str]:
-    """Return all distinct tags across all articles, sorted by frequency."""
+def list_all_tags() -> list[dict]:
+    """Return all distinct tags with counts, sorted by frequency descending."""
     with get_conn() as conn:
         rows = conn.execute("SELECT tags FROM articles WHERE tags IS NOT NULL AND tags != '[]'").fetchall()
     freq: dict[str, int] = {}
@@ -209,7 +218,7 @@ def list_all_tags() -> list[str]:
                 freq[tag] = freq.get(tag, 0) + 1
         except Exception:
             pass
-    return sorted(freq, key=lambda t: -freq[t])
+    return [{"tag": t, "count": freq[t]} for t in sorted(freq, key=lambda t: -freq[t])]
 
 
 def count_by_type() -> dict:

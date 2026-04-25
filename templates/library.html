@@ -139,6 +139,52 @@
             color: var(--accent);
         }
 
+        .tags-section {
+            margin-top: 8px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .tags-section::-webkit-scrollbar { width: 3px; }
+        .tags-section::-webkit-scrollbar-track { background: transparent; }
+        .tags-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .tag-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s;
+        }
+
+        .tag-nav:hover { background: var(--surface-2); color: var(--text); }
+
+        .tag-nav.active {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .tag-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+
+        .tag-nav.active .tag-dot { background: var(--accent); }
+        .tag-nav.active span { color: var(--accent); }
+
         .sidebar-footer {
             margin-top: auto;
         }
@@ -418,37 +464,16 @@
             <span class="logo-text">知识库</span>
         </div>
 
-        <div class="nav-label">分类</div>
-        <button class="nav-item active" data-type="" onclick="filterBy(this, '')">
+        <div class="nav-label">标签</div>
+        <button class="nav-item active" id="tag-all" onclick="clearTags()">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             全部
             <span class="nav-badge" id="count-all">—</span>
         </button>
-        <button class="nav-item" data-type="url" onclick="filterBy(this, 'url')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            网页
-            <span class="nav-badge" id="count-url">—</span>
-        </button>
-        <button class="nav-item" data-type="youtube" onclick="filterBy(this, 'youtube')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
-            YouTube
-            <span class="nav-badge" id="count-youtube">—</span>
-        </button>
-        <button class="nav-item" data-type="pdf" onclick="filterBy(this, 'pdf')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            PDF
-            <span class="nav-badge" id="count-pdf">—</span>
-        </button>
-        <button class="nav-item" data-type="txt" onclick="filterBy(this, 'txt')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            文本
-            <span class="nav-badge" id="count-txt">—</span>
-        </button>
-        <button class="nav-item" data-type="script" onclick="filterBy(this, 'script')">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-            文稿导入
-            <span class="nav-badge" id="count-script">—</span>
-        </button>
+
+        <div class="tags-section" id="tags-nav">
+            <div style="padding:8px 10px;font-size:12px;color:var(--text-muted)">加载中...</div>
+        </div>
 
         <div class="sidebar-footer">
             <a href="/generate" class="btn-new">
@@ -477,12 +502,12 @@
 </div>
 
 <script>
-    let allArticles = [];
-    let currentType = '';
     let searchTimer = null;
+    let selectedTags = new Set();
+    let totalCount = 0;
 
     const SOURCE_LABELS = {
-        url: '网页', youtube: 'YouTube', pdf: 'PDF', txt: '文本', imported: '导入'
+        url: '网页', youtube: 'YouTube', pdf: 'PDF', txt: '文本', script: '导入', imported: '导入'
     };
 
     function formatDate(iso) {
@@ -491,14 +516,13 @@
     }
 
     function badgeClass(type) {
-        const map = { url:'badge-url', youtube:'badge-youtube', pdf:'badge-pdf', txt:'badge-txt', imported:'badge-imported' };
+        const map = { url:'badge-url', youtube:'badge-youtube', pdf:'badge-pdf', txt:'badge-txt', script:'badge-imported', imported:'badge-imported' };
         return map[type] || 'badge-imported';
     }
 
     function renderCards(articles) {
         const el = document.getElementById('content');
         document.getElementById('result-count').textContent = articles.length;
-
         if (!articles.length) {
             el.innerHTML = `<div class="empty">
                 <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 13h6m-3-3v6m5 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
@@ -506,8 +530,7 @@
             </div>`;
             return;
         }
-
-        el.innerHTML = `<div class="grid">${articles.map(a => cardHTML(a)).join('')}</div>`;
+        el.innerHTML = `<div class="grid">${articles.map(cardHTML).join('')}</div>`;
     }
 
     function cardHTML(a) {
@@ -517,22 +540,18 @@
         const placeholder = `<div class="card-thumb-placeholder" ${a.image_url ? 'style="display:none"' : ''}>
             <svg fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>`;
-
         const wc = a.word_count ? `<span class="card-word-count">${a.word_count.toLocaleString()} 字</span>` : `<span></span>`;
-
         const readLink = a.article_md_path
-            ? `<a class="card-read-link" href="/article/${a.id}">
-                阅读
-                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-               </a>`
+            ? `<a class="card-read-link" href="/article/${a.id}">阅读<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>`
             : '';
-
         let tags = [];
         try { tags = JSON.parse(a.tags || '[]'); } catch(e) {}
         const tagsHtml = tags.length
-            ? `<div class="card-tags">${tags.map(t => `<span class="tag-chip" onclick="filterByTag(event,'${t}')">${t}</span>`).join('')}</div>`
+            ? `<div class="card-tags">${tags.map(t => {
+                const active = selectedTags.has(t) ? 'style="border-color:var(--accent);color:var(--accent)"' : '';
+                return `<span class="tag-chip" ${active} onclick="toggleTagFromCard(event,'${t}')">${t}</span>`;
+              }).join('')}</div>`
             : '';
-
         return `<div class="card">
             ${thumb}${placeholder}
             <div class="card-body">
@@ -543,58 +562,91 @@
                 <div class="card-title">${a.title}</div>
                 <div class="card-summary">${a.summary || ''}</div>
                 ${tagsHtml}
-                <div class="card-footer">
-                    ${wc}
-                    ${readLink}
-                </div>
+                <div class="card-footer">${wc}${readLink}</div>
             </div>
         </div>`;
     }
 
-    function updateCounts(counts) {
-        const total = Object.values(counts).reduce((s, n) => s + n, 0);
-        document.getElementById('count-all').textContent = total;
-        ['url','youtube','pdf','txt','script','imported'].forEach(t => {
-            const el = document.getElementById('count-' + t);
-            if (el) el.textContent = counts[t] || 0;
-        });
+    function renderTagNav(tags) {
+        const nav = document.getElementById('tags-nav');
+        if (!tags.length) {
+            nav.innerHTML = `<div style="padding:8px 10px;font-size:12px;color:var(--text-muted)">暂无标签</div>`;
+            return;
+        }
+        nav.innerHTML = tags.filter(({ count }) => count >= 2).map(({ tag, count }) => {
+            const active = selectedTags.has(tag) ? 'active' : '';
+            return `<button class="tag-nav ${active}" onclick="toggleTag('${tag}')" data-tag="${tag}">
+                <span class="tag-dot"></span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tag}</span>
+                <span style="font-size:11px;color:var(--text-muted);margin-left:4px;flex-shrink:0">${count}</span>
+            </button>`;
+        }).join('');
     }
 
-    async function load(type = '', query = '') {
+    function updateAllBtn() {
+        const btn = document.getElementById('tag-all');
+        btn.classList.toggle('active', selectedTags.size === 0);
+        document.getElementById('count-all').textContent = totalCount;
+    }
+
+    async function loadTags() {
+        const res = await fetch('/api/tags');
+        const tags = await res.json();
+        renderTagNav(tags);
+    }
+
+    async function load() {
         try {
             const params = new URLSearchParams();
-            if (type) params.set('source_type', type);
-            if (query) params.set('q', query);
+            const q = document.getElementById('search-input').value.trim();
+            if (q) params.set('q', q);
+            if (selectedTags.size) params.set('tags', [...selectedTags].join(','));
             const res = await fetch('/api/articles?' + params);
             const data = await res.json();
-            allArticles = data.articles;
-            renderCards(allArticles);
-            updateCounts(data.counts);
+            totalCount = Object.values(data.counts).reduce((s, n) => s + n, 0);
+            renderCards(data.articles);
+            updateAllBtn();
         } catch (e) {
             document.getElementById('content').innerHTML = `<div class="empty"><p style="color:var(--error)">加载失败：${e.message}</p></div>`;
         }
     }
 
-    function filterBy(btn, type) {
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentType = type;
-        load(type, document.getElementById('search-input').value.trim());
+    function toggleTag(tag) {
+        if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+        } else {
+            selectedTags.add(tag);
+        }
+        // Update sidebar button states
+        document.querySelectorAll('.tag-nav').forEach(btn => {
+            btn.classList.toggle('active', selectedTags.has(btn.dataset.tag));
+        });
+        updateAllBtn();
+        load();
     }
 
-    function filterByTag(e, tag) {
+    function clearTags() {
+        selectedTags.clear();
+        document.querySelectorAll('.tag-nav').forEach(btn => btn.classList.remove('active'));
+        updateAllBtn();
+        load();
+    }
+
+    function toggleTagFromCard(e, tag) {
         e.preventDefault();
         e.stopPropagation();
-        const input = document.getElementById('search-input');
-        input.value = tag;
-        onSearch(tag);
+        toggleTag(tag);
+        // Scroll the sidebar tag into view
+        const btn = document.querySelector(`.tag-nav[data-tag="${tag}"]`);
+        if (btn) btn.scrollIntoView({ block: 'nearest' });
     }
 
     function onSearch(val) {
         clearTimeout(searchTimer);
-        searchTimer = setTimeout(() => load(currentType, val.trim()), 300);
+        searchTimer = setTimeout(load, 300);
     }
 
+    loadTags();
     load();
 </script>
 </body>
