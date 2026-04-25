@@ -372,10 +372,17 @@ async def generate_page(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
 
+@app.get("/api/tags")
+async def api_tags():
+    from services.db import list_all_tags
+    return JSONResponse(list_all_tags())
+
+
 @app.get("/api/articles")
-async def api_articles(source_type: str = None, q: str = None, limit: int = 100, offset: int = 0):
+async def api_articles(source_type: str = None, q: str = None, tags: str = None, limit: int = 100, offset: int = 0):
     from services.db import list_articles, count_by_type
-    articles = list_articles(source_type=source_type, query=q, limit=limit, offset=offset)
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    articles = list_articles(source_type=source_type, query=q, tags=tag_list, limit=limit, offset=offset)
     counts = count_by_type()
     return JSONResponse({"articles": articles, "counts": counts})
 
