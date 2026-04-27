@@ -4,6 +4,7 @@ edge-tts
 yt-dlp
 deep-translator
 feedgen
+feedparser
 trafilatura
 PyPDF2
 python-multipart

@@ -1,30 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>知识库</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t)})();</script>
     <style>
         :root {
-            --bg: #0d0d14;
-            --surface: #16161f;
-            --surface-2: #1e1e2d;
-            --border: rgba(255,255,255,0.07);
-            --accent: #7c5cfc;
-            --accent-2: #5b8dee;
-            --accent-glow: rgba(124,92,252,0.2);
-            --text: #e8e8f0;
-            --text-muted: #7a7a9a;
-            --success: #34d399;
-            --error: #f87171;
-            --radius: 16px;
-            --radius-sm: 10px;
+            --bg: #c8ceaf;
+            --surface: rgba(255,255,255,0.32);
+            --surface-2: rgba(255,255,255,0.18);
+            --border: rgba(255,255,255,0.55);
+            --accent: #4a6741;
+            --accent-2: #8a6440;
+            --accent-glow: rgba(74,103,65,0.14);
+            --text: #2a2e1e;
+            --text-muted: #7a816a;
+            --success: #4a8c5c;
+            --error: #b85450;
+            --radius: 18px;
+            --radius-sm: 11px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1c2215;
+            --surface: rgba(255,255,255,0.07);
+            --surface-2: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.10);
+            --accent: #8aaa6a;
+            --accent-2: #c49a6c;
+            --accent-glow: rgba(138,170,106,0.16);
+            --text: #e8eddc;
+            --text-muted: #8a9478;
+            --success: #6aaa7a;
+            --error: #e07070;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            font-family: 'DM Sans', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
@@ -35,13 +53,31 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,92,252,0.1) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(91,141,238,0.08) 0%, transparent 60%);
+                radial-gradient(ellipse 70% 55% at 15% 20%, rgba(138,170,106,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse 55% 45% at 85% 75%, rgba(196,154,108,0.28) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 50% at 50% 10%, rgba(255,255,255,0.18) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Sidebar */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.038;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="dark"] body::before {
+            background:
+                radial-gradient(ellipse 70% 55% at 15% 20%, rgba(74,103,65,0.45) 0%, transparent 55%),
+                radial-gradient(ellipse 55% 45% at 85% 75%, rgba(138,100,60,0.30) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 50% at 50% 10%, rgba(255,255,255,0.03) 0%, transparent 50%);
+        }
+
+        /* Layout */
         .layout {
             display: flex;
             min-height: 100vh;
@@ -49,14 +85,17 @@
             z-index: 1;
         }
 
+        /* Sidebar */
         .sidebar {
-            width: 220px;
+            width: 224px;
             flex-shrink: 0;
             background: var(--surface);
+            backdrop-filter: blur(24px) saturate(140%);
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 24px 16px;
+            padding: 22px 14px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -66,36 +105,39 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 32px;
-            padding: 0 4px;
+            margin-bottom: 28px;
+            padding: 0 6px;
         }
 
         .logo-icon {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px var(--accent-glow);
         }
 
-        .logo-icon svg { width: 16px; height: 16px; fill: white; }
+        .logo-icon svg { width: 15px; height: 15px; fill: white; }
 
         .logo-text {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: 'Cormorant Garamond', Georgia, serif;
             color: var(--text);
+            letter-spacing: 0.2px;
         }
 
         .nav-label {
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             padding: 0 8px;
         }
 
@@ -103,9 +145,9 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 10px;
+            padding: 7px 8px;
             border-radius: var(--radius-sm);
-            font-size: 14px;
+            font-size: 13.5px;
             color: var(--text-muted);
             cursor: pointer;
             border: none;
@@ -123,11 +165,12 @@
             color: var(--accent);
         }
 
-        .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+        .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
 
         .nav-badge {
             margin-left: auto;
-            font-size: 11px;
+            font-size: 10.5px;
+            font-weight: 600;
             background: var(--surface-2);
             color: var(--text-muted);
             padding: 1px 6px;
@@ -139,132 +182,156 @@
             color: var(--accent);
         }
 
-        .tags-section {
-            margin-top: 8px;
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-        }
-
-        .tags-section::-webkit-scrollbar { width: 3px; }
-        .tags-section::-webkit-scrollbar-track { background: transparent; }
-        .tags-section::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-        .tag-nav {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            color: var(--text-muted);
-            cursor: pointer;
-            border: none;
-            background: none;
+        .tag-select {
             width: 100%;
-            text-align: left;
-            transition: all 0.15s;
+            margin-top: 8px;
+            padding: 7px 10px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
         }
-
-        .tag-nav:hover { background: var(--surface-2); color: var(--text); }
-
-        .tag-nav.active {
-            background: var(--accent-glow);
-            color: var(--accent);
-        }
-
-        .tag-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            flex-shrink: 0;
-            transition: background 0.15s;
-        }
-
-        .tag-nav.active .tag-dot { background: var(--accent); }
-        .tag-nav.active span { color: var(--accent); }
+        .tag-select:focus { border-color: var(--accent); }
+        .tag-select option { background: var(--surface); color: var(--text); }
 
         .sidebar-footer {
             margin-top: auto;
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
         }
 
         .btn-new {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 6px;
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             color: white;
             border: none;
             border-radius: var(--radius-sm);
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: opacity 0.15s;
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
 
-        .btn-new:hover { opacity: 0.9; }
-        .btn-new svg { width: 14px; height: 14px; }
+        .btn-new:hover { opacity: 0.88; }
+        .btn-new svg { width: 13px; height: 13px; }
+
+        .btn-save-quick {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 9px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .btn-save-quick:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-save-quick svg { width: 13px; height: 13px; }
 
         /* Main content */
         .main {
             flex: 1;
-            padding: 32px 36px;
+            padding: 28px 32px;
             min-width: 0;
         }
 
         .topbar {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 28px;
+            gap: 10px;
+            margin-bottom: 24px;
         }
 
         .search-wrap {
             flex: 1;
-            max-width: 420px;
+            max-width: 400px;
             position: relative;
         }
 
         .search-wrap svg {
             position: absolute;
-            left: 12px;
+            left: 11px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            width: 15px;
-            height: 15px;
+            width: 14px;
+            height: 14px;
+            pointer-events: none;
         }
 
         .search-input {
             width: 100%;
-            padding: 9px 14px 9px 36px;
+            padding: 8px 14px 8px 34px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             color: var(--text);
-            font-size: 14px;
+            font-size: 13.5px;
+            font-family: inherit;
             outline: none;
-            transition: border-color 0.15s;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .search-input::placeholder { color: var(--text-muted); }
-        .search-input:focus { border-color: var(--accent); }
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
 
         .stats {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             align-items: center;
-            font-size: 13px;
+            font-size: 12.5px;
             color: var(--text-muted);
             margin-left: auto;
         }
 
         .stat-num { color: var(--text); font-weight: 600; }
+
+        .btn-theme {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .btn-theme:hover { color: var(--text); border-color: var(--accent); }
+        .btn-theme svg { width: 15px; height: 15px; }
 
         /* Empty state */
         .empty {
@@ -277,14 +344,14 @@
             color: var(--text-muted);
         }
 
-        .empty svg { opacity: 0.25; width: 48px; height: 48px; }
-        .empty p { font-size: 14px; }
+        .empty svg { opacity: 0.2; width: 44px; height: 44px; }
+        .empty p { font-size: 13.5px; }
 
         /* Article grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 14px;
         }
 
         .card {
@@ -292,20 +359,30 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             overflow: hidden;
-            transition: border-color 0.2s, transform 0.2s;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             display: flex;
             flex-direction: column;
         }
 
+        .card {
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+        }
+
         .card:hover {
-            border-color: rgba(124,92,252,0.4);
+            border-color: rgba(74,103,65,0.45);
             transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        [data-theme="dark"] .card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
         }
 
         .card-thumb {
             width: 100%;
-            height: 140px;
+            height: 136px;
             object-fit: cover;
             background: var(--surface-2);
             display: block;
@@ -313,21 +390,21 @@
 
         .card-thumb-placeholder {
             width: 100%;
-            height: 140px;
-            background: linear-gradient(135deg, var(--surface-2), #12121a);
+            height: 136px;
+            background: var(--surface-2);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .card-thumb-placeholder svg { width: 36px; height: 36px; opacity: 0.15; }
+        .card-thumb-placeholder svg { width: 32px; height: 32px; opacity: 0.1; }
 
         .card-body {
-            padding: 16px;
+            padding: 14px 16px;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 7px;
         }
 
         .card-meta {
@@ -337,39 +414,42 @@
         }
 
         .badge {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 20px;
+            letter-spacing: 0.2px;
         }
 
-        .badge-url     { background: rgba(91,141,238,0.15); color: #5b8dee; }
-        .badge-youtube { background: rgba(248,113,113,0.15); color: #f87171; }
-        .badge-pdf     { background: rgba(251,191,36,0.15);  color: #fbbf24; }
-        .badge-txt     { background: rgba(52,211,153,0.15);  color: #34d399; }
-        .badge-imported { background: rgba(124,92,252,0.15); color: #7c5cfc; }
+        .badge-url     { background: rgba(74,103,65,0.14);  color: var(--accent); }
+        .badge-youtube { background: rgba(184,84,80,0.12);  color: #b85450; }
+        .badge-pdf     { background: rgba(138,100,64,0.14); color: var(--accent-2); }
+        .badge-txt     { background: rgba(74,140,92,0.14);  color: var(--success); }
+        .badge-imported { background: rgba(74,103,65,0.12); color: var(--accent); }
 
         .card-date {
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--text-muted);
             margin-left: auto;
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
+            font-family: 'Cormorant Garamond', Georgia, serif;
             color: var(--text);
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            letter-spacing: 0.1px;
         }
 
         .card-summary {
-            font-size: 13px;
+            font-size: 12.5px;
             color: var(--text-muted);
-            line-height: 1.6;
+            line-height: 1.65;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -387,7 +467,7 @@
         }
 
         .card-word-count {
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--text-muted);
         }
 
@@ -405,19 +485,37 @@
             transition: background 0.15s;
         }
 
-        .card-read-link:hover { background: rgba(124,92,252,0.3); }
-        .card-read-link svg { width: 11px; height: 11px; }
+        .card-read-link:hover { background: rgba(74,103,65,0.22); }
+        .card-read-link svg { width: 10px; height: 10px; }
 
+        .card-delete {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 7px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 11.5px;
+            transition: all 0.15s;
+            opacity: 0;
+        }
+        .card:hover .card-delete { opacity: 1; }
+        .card-delete:hover { background: rgba(248,113,113,0.12); color: var(--error); }
+        .card-delete svg { width: 12px; height: 12px; }
+
+        /* Card tags */
         .card-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 4px;
+            gap: 4px;
+            margin-top: 2px;
         }
 
         .tag-chip {
             font-size: 11px;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 20px;
             background: var(--surface-2);
             color: var(--text-muted);
@@ -429,6 +527,99 @@
 
         .tag-chip:hover { border-color: var(--accent); color: var(--accent); }
 
+        /* Quick save modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--surface);
+            backdrop-filter: blur(28px) saturate(150%);
+            -webkit-backdrop-filter: blur(28px) saturate(150%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 480px;
+            max-width: 90vw;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        [data-theme="dark"] .modal {
+            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+        }
+
+        .modal-title {
+            font-size: 15.5px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
+
+        .modal-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 9px 13px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .modal-input::placeholder { color: var(--text-muted); }
+
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+        .btn-modal-cancel {
+            padding: 8px 16px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-modal-cancel:hover { color: var(--text); border-color: var(--text-muted); }
+
+        .btn-modal-ok {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .btn-modal-ok:hover { opacity: 0.88; }
+        .btn-modal-ok:disabled { opacity: 0.45; cursor: not-allowed; }
+
         /* Loading */
         .loading {
             display: flex;
@@ -437,19 +628,403 @@
             gap: 10px;
             padding: 60px 0;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13.5px;
         }
 
         .spinner {
-            width: 18px;
-            height: 18px;
+            width: 17px;
+            height: 17px;
             border: 2px solid var(--border);
             border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.75s linear infinite;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Daily brief */
+        .brief-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brief-card {
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+        }
+
+        .brief-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(74,103,65,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .brief-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .brief-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .brief-label svg { width: 11px; height: 11px; }
+
+        .brief-date {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .brief-body {
+            font-size: 13.5px;
+            line-height: 1.9;
+            color: var(--text);
+            opacity: 0.85;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .brief-sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            position: relative;
+        }
+
+        .brief-source-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .brief-source-chip {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .brief-source-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+        .brief-collapsible {
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            max-height: 600px;
+            opacity: 1;
+        }
+        .brief-collapsible.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .btn-collapse {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            transition: color 0.15s;
+        }
+        .btn-collapse:hover { color: var(--text); }
+        .btn-collapse svg { width: 13px; height: 13px; transition: transform 0.25s; }
+        .btn-collapse.collapsed svg { transform: rotate(-90deg); }
+
+        .brief-actions {
+            display: flex;
+            gap: 7px;
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .btn-brief {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 5px 11px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(74,103,65,0.28);
+            background: var(--accent-glow);
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-brief:hover { background: rgba(74,103,65,0.22); }
+        .btn-brief:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-brief svg { width: 11px; height: 11px; }
+
+        .brief-skeleton {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .brief-skeleton-line {
+            height: 13px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--surface-2) 25%, rgba(255,255,255,0.12) 50%, var(--surface-2) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+
+        [data-theme="dark"] .brief-skeleton-line {
+            background: linear-gradient(90deg, var(--surface-2) 25%, rgba(255,255,255,0.04) 50%, var(--surface-2) 75%);
+            background-size: 200% 100%;
+        }
+
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* Inbox / Notes views */
+        .inbox-view, .notes-view { display: none; }
+        .inbox-view.active, .notes-view.active { display: block; }
+        .library-view.hidden { display: none; }
+
+        .notes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .note-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent-2);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .note-card-source {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .note-card-source:hover { color: var(--accent); }
+
+        .note-card-text {
+            font-size: 13.5px;
+            color: var(--text);
+            opacity: 0.8;
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        .note-card-note {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 500;
+            line-height: 1.65;
+            padding: 6px 10px;
+            background: var(--accent-glow);
+            border-radius: 6px;
+        }
+
+        .inbox-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .inbox-title {
+            font-size: 22px;
+            font-weight: 600;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-refresh svg { width: 13px; height: 13px; }
+        .btn-refresh.spinning svg { animation: spin 0.8s linear infinite; }
+
+        .inbox-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 64px 0;
+            color: var(--text-muted);
+            font-size: 13.5px;
+        }
+        .inbox-empty svg { opacity: 0.18; width: 44px; height: 44px; }
+
+        .inbox-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            transition: border-color 0.15s;
+        }
+        .inbox-item:hover { border-color: rgba(74,103,65,0.35); }
+
+        .score-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .score-high  { background: rgba(74,140,92,0.16);  color: var(--success); }
+        .score-mid   { background: rgba(138,100,64,0.16); color: var(--accent-2); }
+        .score-low   { background: var(--surface-2); color: var(--text-muted); }
+
+        .inbox-item-body { flex: 1; min-width: 0; }
+
+        .inbox-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            letter-spacing: -0.2px;
+        }
+
+        .inbox-item-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .inbox-item-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inbox-source-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .inbox-item-actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+            align-items: flex-start;
+        }
+
+        .btn-inbox-save {
+            padding: 5px 11px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+        .btn-inbox-save:hover { opacity: 0.85; }
+        .btn-inbox-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-inbox-dismiss {
+            padding: 5px 8px;
+            font-size: 12px;
+            font-family: inherit;
+            background: var(--surface-2);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-inbox-dismiss:hover { color: var(--error); border-color: rgba(248,113,113,0.3); }
+
+        /* Feed management modal */
+        .feed-item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .feed-item-row:last-child { border-bottom: none; }
+        .feed-item-info { flex: 1; min-width: 0; }
+        .feed-item-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+        .feed-item-url  { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .feed-type-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: var(--surface-2); color: var(--text-muted); text-transform: uppercase; flex-shrink: 0; }
+        .btn-feed-delete { padding: 4px 8px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 11.5px; font-family: inherit; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+        .btn-feed-delete:hover { color: var(--error); border-color: rgba(248,113,113,0.3); }
+
+        .nav-inbox-badge {
+            margin-left: auto;
+            font-size: 10.5px;
+            font-weight: 700;
+            background: var(--accent);
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            display: none;
+        }
+        .nav-inbox-badge.visible { display: inline-block; }
     </style>
 </head>
 <body>
@@ -464,18 +1039,30 @@
             <span class="logo-text">知识库</span>
         </div>
 
-        <div class="nav-label">标签</div>
-        <button class="nav-item active" id="tag-all" onclick="clearTags()">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            全部
-            <span class="nav-badge" id="count-all">—</span>
+        <button class="nav-item" id="nav-inbox" onclick="switchView('inbox')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+            收件箱
+            <span class="nav-inbox-badge" id="inbox-badge">0</span>
+        </button>
+        <button class="nav-item" id="nav-notes" onclick="switchView('notes')">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            我的笔记
+            <span class="nav-badge" id="notes-count"></span>
         </button>
 
-        <div class="tags-section" id="tags-nav">
-            <div style="padding:8px 10px;font-size:12px;color:var(--text-muted)">加载中...</div>
-        </div>
+        <select class="tag-select" id="tag-select" onchange="onTagSelect(this.value)">
+            <option value="">全部标签</option>
+        </select>
 
         <div class="sidebar-footer">
+            <button class="btn-save-quick" onclick="openFeedModal()">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+                管理订阅
+            </button>
+            <button class="btn-save-quick" onclick="openSaveModal()">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                快速收藏
+            </button>
             <a href="/generate" class="btn-new">
                 <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 新建播客
@@ -485,6 +1072,36 @@
 
     <!-- Main -->
     <main class="main">
+        <!-- Daily brief -->
+        <div class="brief-card" id="brief-card">
+            <div class="brief-header">
+                <div class="brief-label">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+                    今日简报
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span class="brief-date" id="brief-date"></span>
+                    <button class="btn-collapse" id="brief-collapse-btn" onclick="toggleBrief()" title="折叠">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="brief-collapsible" id="brief-collapsible">
+                <div id="brief-body" class="brief-skeleton" style="margin-top:10px">
+                    <div class="brief-skeleton-line" style="width:92%"></div>
+                    <div class="brief-skeleton-line" style="width:85%"></div>
+                    <div class="brief-skeleton-line" style="width:88%"></div>
+                    <div class="brief-skeleton-line" style="width:60%"></div>
+                </div>
+                <div class="brief-actions">
+                    <button class="btn-brief" id="brief-refresh" onclick="loadBrief(true)" disabled>
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        换一批
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="topbar">
             <div class="search-wrap">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -493,12 +1110,104 @@
             <div class="stats">
                 共 <span class="stat-num" id="result-count">—</span> 篇
             </div>
+            <button class="btn-theme" onclick="toggleTheme()" title="切换主题">
+                <svg id="theme-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
         </div>
 
-        <div id="content">
-            <div class="loading"><div class="spinner"></div> 加载中...</div>
+        <!-- Library view (default) -->
+        <div class="library-view" id="library-view">
+            <div id="content">
+                <div class="loading"><div class="spinner"></div> 加载中...</div>
+            </div>
+        </div>
+
+        <!-- Notes view -->
+        <div class="notes-view" id="notes-view">
+            <div class="inbox-header">
+                <span class="inbox-title">我的笔记</span>
+            </div>
+            <div class="notes-grid" id="notes-content">
+                <div class="loading"><div class="spinner"></div> 加载中...</div>
+            </div>
+        </div>
+
+        <!-- Inbox view -->
+        <div class="inbox-view" id="inbox-view">
+            <div class="inbox-header">
+                <span class="inbox-title">收件箱</span>
+                <button class="btn-refresh" id="refresh-btn" onclick="refreshFeeds()">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    刷新
+                </button>
+            </div>
+            <div id="inbox-content">
+                <div class="loading"><div class="spinner"></div> 加载中...</div>
+            </div>
         </div>
     </main>
+</div>
+
+<!-- Feed management modal -->
+<div class="modal-overlay" id="feed-modal">
+    <div class="modal" onclick="event.stopPropagation()" style="width:520px">
+        <div class="modal-title">管理订阅</div>
+        <div class="modal-desc">支持 RSS/Atom 链接和 YouTube 频道链接。系统每 4 小时自动抓取并评分。</div>
+
+        <div style="display:flex;gap:8px">
+            <input class="modal-input" id="feed-url-input" type="url" placeholder="https://..." style="flex:1" onkeydown="if(event.key==='Enter')addFeed()">
+            <input class="modal-input" id="feed-name-input" type="text" placeholder="名称（可选）" style="width:130px" onkeydown="if(event.key==='Enter')addFeed()">
+            <button class="btn-modal-ok" style="white-space:nowrap" onclick="addFeed()" id="add-feed-btn">添加</button>
+        </div>
+
+        <div id="feed-status" style="font-size:12.5px;min-height:16px;color:var(--text-muted)"></div>
+
+        <div id="feed-list" style="max-height:260px;overflow-y:auto">
+            <div style="font-size:13px;color:var(--text-muted);padding:12px 0">加载中...</div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeFeedModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- Quick save modal -->
+<div class="modal-overlay" id="save-modal">
+    <div class="modal" onclick="event.stopPropagation()" style="width:520px">
+        <div class="modal-title">快速收藏</div>
+
+        <!-- Tab bar -->
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin:0 -24px;padding:0 24px">
+            <button id="stab-url" onclick="switchSaveTab('url')"
+                style="padding:7px 14px;font-size:12px;font-weight:600;font-family:inherit;background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);cursor:pointer;margin-bottom:-1px">
+                链接
+            </button>
+            <button id="stab-text" onclick="switchSaveTab('text')"
+                style="padding:7px 14px;font-size:12px;font-weight:600;font-family:inherit;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);cursor:pointer;margin-bottom:-1px">
+                粘贴文字
+            </button>
+        </div>
+
+        <!-- URL tab -->
+        <div id="save-tab-url">
+            <div class="modal-desc">粘贴链接，直接存入知识库，不经过 LLM 处理。</div>
+            <input class="modal-input" id="save-url-input" type="url" placeholder="https://..." onkeydown="if(event.key==='Enter')doSave()">
+        </div>
+
+        <!-- Text tab -->
+        <div id="save-tab-text" style="display:none">
+            <div class="modal-desc">适用于微信文章等无法直接提取的内容。复制正文粘贴到此处。</div>
+            <input class="modal-input" id="save-text-title" placeholder="标题（可选，留空由 AI 生成）" style="margin-bottom:8px">
+            <textarea class="modal-input" id="save-text-body" placeholder="在此粘贴文章正文..." rows="6" style="resize:vertical;font-family:inherit"></textarea>
+        </div>
+
+        <div id="save-modal-status" style="font-size:12.5px;color:var(--text-muted);min-height:18px"></div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeSaveModal()">取消</button>
+            <button class="btn-modal-ok" id="save-modal-btn" onclick="doSave()">收藏</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -562,32 +1271,29 @@
                 <div class="card-title">${a.title}</div>
                 <div class="card-summary">${a.summary || ''}</div>
                 ${tagsHtml}
-                <div class="card-footer">${wc}${readLink}</div>
+                <div class="card-footer">
+                    ${wc}
+                    <div style="display:flex;align-items:center;gap:6px">
+                        <button class="card-delete" onclick="deleteArticle(event,'${a.id}')">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                        </button>
+                        ${readLink}
+                    </div>
+                </div>
             </div>
         </div>`;
     }
 
     function renderTagNav(tags) {
-        const nav = document.getElementById('tags-nav');
-        if (!tags.length) {
-            nav.innerHTML = `<div style="padding:8px 10px;font-size:12px;color:var(--text-muted)">暂无标签</div>`;
-            return;
-        }
-        nav.innerHTML = tags.filter(({ count }) => count >= 2).map(({ tag, count }) => {
-            const active = selectedTags.has(tag) ? 'active' : '';
-            return `<button class="tag-nav ${active}" onclick="toggleTag('${tag}')" data-tag="${tag}">
-                <span class="tag-dot"></span>
-                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tag}</span>
-                <span style="font-size:11px;color:var(--text-muted);margin-left:4px;flex-shrink:0">${count}</span>
-            </button>`;
-        }).join('');
+        const sel = document.getElementById('tag-select');
+        const current = sel.value;
+        sel.innerHTML = '<option value="">全部标签</option>' +
+            tags.filter(({ count }) => count >= 2).map(({ tag, count }) =>
+                `<option value="${tag}"${tag === current ? ' selected' : ''}>${tag} (${count})</option>`
+            ).join('');
     }
 
-    function updateAllBtn() {
-        const btn = document.getElementById('tag-all');
-        btn.classList.toggle('active', selectedTags.size === 0);
-        document.getElementById('count-all').textContent = totalCount;
-    }
+    function updateAllBtn() {}
 
     async function loadTags() {
         const res = await fetch('/api/tags');
@@ -611,34 +1317,32 @@
         }
     }
 
+    function onTagSelect(tag) {
+        selectedTags.clear();
+        if (tag) selectedTags.add(tag);
+        load();
+    }
+
     function toggleTag(tag) {
-        if (selectedTags.has(tag)) {
-            selectedTags.delete(tag);
-        } else {
-            selectedTags.add(tag);
-        }
-        // Update sidebar button states
-        document.querySelectorAll('.tag-nav').forEach(btn => {
-            btn.classList.toggle('active', selectedTags.has(btn.dataset.tag));
-        });
-        updateAllBtn();
+        selectedTags.clear();
+        selectedTags.add(tag);
+        document.getElementById('tag-select').value = tag;
         load();
     }
 
     function clearTags() {
         selectedTags.clear();
-        document.querySelectorAll('.tag-nav').forEach(btn => btn.classList.remove('active'));
-        updateAllBtn();
+        document.getElementById('tag-select').value = '';
         load();
     }
 
     function toggleTagFromCard(e, tag) {
         e.preventDefault();
         e.stopPropagation();
-        toggleTag(tag);
-        // Scroll the sidebar tag into view
-        const btn = document.querySelector(`.tag-nav[data-tag="${tag}"]`);
-        if (btn) btn.scrollIntoView({ block: 'nearest' });
+        selectedTags.clear();
+        selectedTags.add(tag);
+        document.getElementById('tag-select').value = tag;
+        load();
     }
 
     function onSearch(val) {
@@ -646,8 +1350,429 @@
         searchTimer = setTimeout(load, 300);
     }
 
+    // Daily brief
+    const BRIEF_KEY = () => `brief_${new Date().toISOString().slice(0, 10)}`;
+    const BRIEF_COLLAPSED_KEY = 'brief_collapsed';
+
+    function renderBriefData(data) {
+        const body = document.getElementById('brief-body');
+        body.className = '';
+        const today = new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
+        document.getElementById('brief-date').textContent = today;
+        const chips = data.articles.map(a =>
+            `<a class="brief-source-chip" href="/article/${a.id}">${a.title.slice(0, 18)}${a.title.length > 18 ? '…' : ''}</a>`
+        ).join('');
+        body.innerHTML = `
+            <div class="brief-body">${data.brief.replace(/\n/g, '<br>')}</div>
+            <div class="brief-sources">
+                <span class="brief-source-label">来源：</span>${chips}
+            </div>`;
+    }
+
+    async function loadBrief(force = false) {
+        const body = document.getElementById('brief-body');
+        const btn = document.getElementById('brief-refresh');
+
+        if (!force) {
+            const cached = localStorage.getItem(BRIEF_KEY());
+            if (cached) {
+                try {
+                    renderBriefData(JSON.parse(cached));
+                    btn.disabled = false;
+                    return;
+                } catch(e) {}
+            }
+        }
+
+        btn.disabled = true;
+        body.className = 'brief-skeleton';
+        body.style.marginTop = '10px';
+        body.innerHTML = `
+            <div class="brief-skeleton-line" style="width:92%"></div>
+            <div class="brief-skeleton-line" style="width:85%"></div>
+            <div class="brief-skeleton-line" style="width:88%"></div>
+            <div class="brief-skeleton-line" style="width:60%"></div>`;
+        try {
+            const res = await fetch('/api/brief');
+            const data = await res.json();
+            if (data.brief) {
+                localStorage.setItem(BRIEF_KEY(), JSON.stringify(data));
+                renderBriefData(data);
+            } else {
+                body.className = '';
+                body.innerHTML = `<div style="font-size:13px;color:var(--text-muted)">${data.error || '生成失败'}</div>`;
+            }
+        } catch (e) {
+            body.className = '';
+            body.innerHTML = `<div style="font-size:13px;color:var(--error)">请求失败：${e.message}</div>`;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function toggleBrief() {
+        const col = document.getElementById('brief-collapsible');
+        const btn = document.getElementById('brief-collapse-btn');
+        const isCollapsed = col.classList.toggle('collapsed');
+        btn.classList.toggle('collapsed', isCollapsed);
+        localStorage.setItem(BRIEF_COLLAPSED_KEY, isCollapsed ? '1' : '0');
+    }
+
+    function initBriefCollapse() {
+        if (localStorage.getItem(BRIEF_COLLAPSED_KEY) === '1') {
+            document.getElementById('brief-collapsible').classList.add('collapsed');
+            document.getElementById('brief-collapse-btn').classList.add('collapsed');
+        }
+    }
+
+    initBriefCollapse();
     loadTags();
     load();
+    loadBrief();
+
+    // Delete article
+    async function deleteArticle(e, id) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!confirm('确认删除这篇文章？')) return;
+        await fetch(`/api/articles/${id}`, { method: 'DELETE' });
+        load();
+    }
+
+    // Quick save modal
+    let saveTab = 'url';
+
+    function switchSaveTab(tab) {
+        saveTab = tab;
+        document.getElementById('save-tab-url').style.display = tab === 'url' ? '' : 'none';
+        document.getElementById('save-tab-text').style.display = tab === 'text' ? '' : 'none';
+        const accent = 'var(--accent)', muted = 'var(--text-muted)';
+        const solid = `2px solid ${accent}`, none = '2px solid transparent';
+        document.getElementById('stab-url').style.cssText += `;border-bottom:${tab==='url'?solid:none};color:${tab==='url'?accent:muted}`;
+        document.getElementById('stab-text').style.cssText += `;border-bottom:${tab==='text'?solid:none};color:${tab==='text'?accent:muted}`;
+        document.getElementById('save-modal-status').textContent = '';
+    }
+
+    function openSaveModal() {
+        document.getElementById('save-modal').classList.add('open');
+        document.getElementById('save-url-input').value = '';
+        document.getElementById('save-text-title').value = '';
+        document.getElementById('save-text-body').value = '';
+        document.getElementById('save-modal-status').textContent = '';
+        switchSaveTab('url');
+        setTimeout(() => document.getElementById('save-url-input').focus(), 50);
+    }
+
+    function closeSaveModal() {
+        document.getElementById('save-modal').classList.remove('open');
+    }
+
+    async function doSave() {
+        const btn = document.getElementById('save-modal-btn');
+        const status = document.getElementById('save-modal-status');
+        btn.disabled = true;
+        status.style.color = 'var(--text-muted)';
+
+        try {
+            let res;
+            if (saveTab === 'url') {
+                const url = document.getElementById('save-url-input').value.trim();
+                if (!url) { btn.disabled = false; return; }
+                status.textContent = '正在提取内容...';
+                res = await fetch('/api/save/url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url }),
+                });
+            } else {
+                const body = document.getElementById('save-text-body').value.trim();
+                if (!body) { btn.disabled = false; return; }
+                const title = document.getElementById('save-text-title').value.trim();
+                status.textContent = '正在保存...';
+                res = await fetch('/api/save/text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, text: body }),
+                });
+            }
+
+            const data = await res.json();
+            if (data.ok) {
+                status.style.color = 'var(--success)';
+                status.textContent = `已保存：${data.title}`;
+                setTimeout(() => { closeSaveModal(); load(); loadTags(); }, 1200);
+            } else {
+                status.style.color = 'var(--error)';
+                status.textContent = data.error || '保存失败';
+            }
+        } catch (e) {
+            status.style.color = 'var(--error)';
+            status.textContent = '请求失败：' + e.message;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    document.getElementById('save-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeSaveModal();
+    });
+
+    // Theme
+    function toggleTheme() {
+        const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = curr === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeIcon(next);
+    }
+
+    function updateThemeIcon(theme) {
+        const icon = document.getElementById('theme-icon');
+        if (!icon) return;
+        if (theme === 'light') {
+            icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        } else {
+            icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+        }
+    }
+
+    updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'dark');
+
+    // ── View switching ───────────────────────────────────────────────────────
+    let currentView = 'library';
+
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('library-view').classList.toggle('hidden', view !== 'library');
+        document.getElementById('inbox-view').classList.toggle('active', view === 'inbox');
+        document.getElementById('notes-view').classList.toggle('active', view === 'notes');
+        document.getElementById('brief-card').style.display = view === 'library' ? '' : 'none';
+        document.getElementById('nav-inbox').classList.toggle('active', view === 'inbox');
+        document.getElementById('nav-notes').classList.toggle('active', view === 'notes');
+        if (view === 'inbox') { clearTags(); loadInbox(); }
+        if (view === 'notes') { clearTags(); loadNotes(); }
+    }
+
+    async function loadNotes() {
+        const el = document.getElementById('notes-content');
+        el.innerHTML = '<div class="loading"><div class="spinner"></div> 加载中...</div>';
+        try {
+            const res = await fetch('/api/highlights');
+            const items = await res.json();
+            const badge = document.getElementById('notes-count');
+            badge.textContent = items.length || '';
+            if (!items.length) {
+                el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:24px 0;text-align:center">还没有笔记。在文章预览中选中文字，点击「高亮」即可保存。</div>';
+                return;
+            }
+            el.innerHTML = items.map(h => `
+                <div class="note-card" id="nc-${h.id}">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                        <a class="note-card-source" href="/article/${h.article_id}">
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            ${h.article_title || '未知文章'}
+                        </a>
+                        <button onclick="deleteNote('${h.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s" onmouseover="this.style.color='var(--error)'" onmouseout="this.style.color='var(--text-muted)'" title="删除">×</button>
+                    </div>
+                    ${h.note ? `<div class="note-card-note">${h.note}</div>` : `<div class="note-card-text">"${h.text}"</div>`}
+                </div>
+            `).join('');
+        } catch(e) {
+            el.innerHTML = `<div style="color:var(--error);font-size:13px">加载失败：${e.message}</div>`;
+        }
+    }
+
+    async function deleteNote(id) {
+        try {
+            await fetch(`/api/highlights/${id}`, { method: 'DELETE' });
+            const card = document.getElementById(`nc-${id}`);
+            if (card) card.remove();
+            const remaining = document.querySelectorAll('#notes-content .note-card').length;
+            const badge = document.getElementById('notes-count');
+            badge.textContent = remaining || '';
+            if (!remaining) {
+                document.getElementById('notes-content').innerHTML =
+                    '<div style="color:var(--text-muted);font-size:13px;padding:24px 0;text-align:center">还没有笔记。在文章预览中选中文字，点击「高亮」即可保存。</div>';
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ── Inbox ────────────────────────────────────────────────────────────────
+    async function loadInboxCount() {
+        try {
+            const res = await fetch('/api/inbox/count');
+            const { count } = await res.json();
+            const badge = document.getElementById('inbox-badge');
+            badge.textContent = count;
+            badge.classList.toggle('visible', count > 0);
+        } catch(e) {}
+    }
+
+    function scoreClass(score) {
+        if (score >= 70) return 'score-high';
+        if (score >= 40) return 'score-mid';
+        return 'score-low';
+    }
+
+    function renderInbox(items) {
+        const el = document.getElementById('inbox-content');
+        if (!items.length) {
+            el.innerHTML = `<div class="inbox-empty">
+                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                <span>没有新内容，去添加订阅吧</span>
+                <button class="btn-brief" onclick="openFeedModal()" style="margin-top:4px">管理订阅</button>
+            </div>`;
+            return;
+        }
+        el.innerHTML = items.map(item => `
+            <div class="inbox-item" id="iitem-${item.id}">
+                <div class="score-ring ${scoreClass(item.relevance_score)}">${item.relevance_score}</div>
+                <div class="inbox-item-body">
+                    <div class="inbox-item-title">
+                        <a href="${item.url}" target="_blank" style="color:inherit;text-decoration:none">${item.title || '无标题'}</a>
+                    </div>
+                    ${item.description ? `<div class="inbox-item-desc">${item.description}</div>` : ''}
+                    <div class="inbox-item-meta">
+                        ${item.feed_name ? `<span class="inbox-source-badge">${item.feed_name}</span>` : ''}
+                        ${item.published_at ? `<span style="font-size:11px;color:var(--text-muted)">${item.published_at.slice(0,10)}</span>` : ''}
+                    </div>
+                </div>
+                <div class="inbox-item-actions">
+                    <button class="btn-inbox-save" onclick="saveInboxItem('${item.id}', this)">存入</button>
+                    <button class="btn-inbox-dismiss" onclick="dismissInboxItem('${item.id}')">✕</button>
+                </div>
+            </div>`).join('');
+    }
+
+    async function loadInbox() {
+        const el = document.getElementById('inbox-content');
+        el.innerHTML = `<div class="loading"><div class="spinner"></div> 加载中...</div>`;
+        try {
+            const res = await fetch('/api/inbox');
+            const { items } = await res.json();
+            renderInbox(items);
+        } catch(e) {
+            el.innerHTML = `<div class="inbox-empty"><span style="color:var(--error)">加载失败：${e.message}</span></div>`;
+        }
+    }
+
+    async function saveInboxItem(id, btn) {
+        btn.disabled = true;
+        btn.textContent = '处理中...';
+        try {
+            await fetch(`/api/inbox/${id}/save`, { method: 'POST' });
+            btn.textContent = '已存入';
+            btn.style.background = 'var(--success)';
+            setTimeout(() => {
+                document.getElementById(`iitem-${id}`)?.remove();
+                loadInboxCount();
+            }, 1000);
+        } catch(e) {
+            btn.disabled = false;
+            btn.textContent = '存入';
+        }
+    }
+
+    async function dismissInboxItem(id) {
+        await fetch(`/api/inbox/${id}/dismiss`, { method: 'POST' });
+        const el = document.getElementById(`iitem-${id}`);
+        if (el) { el.style.opacity = '0'; el.style.transition = 'opacity 0.2s'; setTimeout(() => el.remove(), 200); }
+        loadInboxCount();
+    }
+
+    async function refreshFeeds() {
+        const btn = document.getElementById('refresh-btn');
+        btn.classList.add('spinning');
+        btn.disabled = true;
+        try {
+            await fetch('/api/feeds/refresh', { method: 'POST' });
+            await loadInbox();
+            await loadInboxCount();
+        } finally {
+            btn.classList.remove('spinning');
+            btn.disabled = false;
+        }
+    }
+
+    // ── Feed management ──────────────────────────────────────────────────────
+    function openFeedModal() {
+        document.getElementById('feed-modal').classList.add('open');
+        document.getElementById('feed-url-input').value = '';
+        document.getElementById('feed-name-input').value = '';
+        document.getElementById('feed-status').textContent = '';
+        loadFeedList();
+        setTimeout(() => document.getElementById('feed-url-input').focus(), 50);
+    }
+
+    function closeFeedModal() {
+        document.getElementById('feed-modal').classList.remove('open');
+    }
+
+    async function loadFeedList() {
+        const el = document.getElementById('feed-list');
+        const feeds = await fetch('/api/feeds').then(r => r.json());
+        if (!feeds.length) {
+            el.innerHTML = `<div style="font-size:13px;color:var(--text-muted);padding:12px 0">暂无订阅</div>`;
+            return;
+        }
+        el.innerHTML = feeds.map(f => `
+            <div class="feed-item-row" id="feed-row-${f.id}">
+                <div class="feed-item-info">
+                    <div class="feed-item-name">${f.name}</div>
+                    <div class="feed-item-url">${f.url}</div>
+                </div>
+                <span class="feed-type-badge">${f.feed_type}</span>
+                <button class="btn-feed-delete" onclick="deleteFeed('${f.id}')">删除</button>
+            </div>`).join('');
+    }
+
+    async function addFeed() {
+        const url = document.getElementById('feed-url-input').value.trim();
+        if (!url) return;
+        const name = document.getElementById('feed-name-input').value.trim();
+        const btn = document.getElementById('add-feed-btn');
+        const status = document.getElementById('feed-status');
+        btn.disabled = true;
+        status.style.color = 'var(--text-muted)';
+        status.textContent = '正在解析链接...';
+        try {
+            const res = await fetch('/api/feeds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, name }),
+            });
+            const data = await res.json();
+            if (data.ok) {
+                status.style.color = 'var(--success)';
+                status.textContent = `已添加（${data.feed_type}），后台正在抓取...`;
+                document.getElementById('feed-url-input').value = '';
+                document.getElementById('feed-name-input').value = '';
+                loadFeedList();
+                loadInboxCount();
+            } else {
+                status.style.color = 'var(--error)';
+                status.textContent = data.error || '添加失败';
+            }
+        } catch(e) {
+            status.style.color = 'var(--error)';
+            status.textContent = '请求失败：' + e.message;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function deleteFeed(id) {
+        await fetch(`/api/feeds/${id}`, { method: 'DELETE' });
+        document.getElementById(`feed-row-${id}`)?.remove();
+        loadInboxCount();
+    }
+
+    document.getElementById('feed-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeFeedModal();
+    });
+
+    // Init
+    loadInboxCount();
 </script>
 </body>
 </html>

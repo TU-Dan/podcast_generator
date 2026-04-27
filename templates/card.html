@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片制作</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t)})();</script>
+    <style>
+        :root {
+            --bg: #c8ceaf;
+            --surface: rgba(255,255,255,0.32);
+            --surface-2: rgba(255,255,255,0.18);
+            --border: rgba(255,255,255,0.55);
+            --accent: #4a6741;
+            --accent-2: #8a6440;
+            --accent-glow: rgba(74,103,65,0.14);
+            --text: #2a2e1e;
+            --text-muted: #7a816a;
+            --radius: 18px;
+            --radius-sm: 11px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #1c2215;
+            --surface: rgba(255,255,255,0.07);
+            --surface-2: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.10);
+            --accent: #8aaa6a;
+            --accent-2: #c49a6c;
+            --accent-glow: rgba(138,170,106,0.16);
+            --text: #e8eddc;
+            --text-muted: #8a9478;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 55% at 15% 20%, rgba(138,170,106,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse 55% 45% at 85% 75%, rgba(196,154,108,0.28) 0%, transparent 55%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.038;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        [data-theme="dark"] body::before {
+            background:
+                radial-gradient(ellipse 70% 55% at 15% 20%, rgba(74,103,65,0.45) 0%, transparent 55%),
+                radial-gradient(ellipse 55% 45% at 85% 75%, rgba(138,100,60,0.30) 0%, transparent 55%);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 18px;
+            height: 50px;
+            background: var(--surface);
+            backdrop-filter: blur(24px) saturate(140%);
+            -webkit-backdrop-filter: blur(24px) saturate(140%);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .toolbar-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .toolbar-back:hover { color: var(--text); }
+        .toolbar-back svg { width: 13px; height: 13px; }
+
+        .toolbar-divider { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+
+        .toolbar-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.2px;
+            flex: 1;
+        }
+
+        .btn-theme {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .btn-theme:hover { color: var(--text); border-color: var(--accent); }
+        .btn-theme svg { width: 14px; height: 14px; }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Controls sidebar */
+        .controls {
+            width: 272px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .controls::-webkit-scrollbar { width: 3px; }
+        .controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .ctrl-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Template selector */
+        .tpl-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+        .tpl-btn {
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 11px;
+            font-family: inherit;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            padding: 8px 4px;
+        }
+        .tpl-btn:hover { border-color: var(--accent); color: var(--text); }
+        .tpl-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .tpl-btn svg { width: 18px; height: 18px; }
+
+        /* Color selector */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px;
+        }
+        .color-btn {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .color-btn:hover { transform: scale(1.06); }
+        .color-btn.active { border-color: white; }
+        .color-btn.active::after {
+            content: '✓';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="light"] .color-btn.active { border-color: #0f172a; }
+        [data-theme="light"] .color-btn.active::after { color: #0f172a; text-shadow: none; }
+
+        /* Text input */
+        .ctrl-textarea {
+            width: 100%;
+            min-height: 110px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.65;
+            padding: 9px 12px;
+            outline: none;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .ctrl-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .ctrl-textarea::placeholder { color: var(--text-muted); }
+
+        /* Font size */
+        .size-row {
+            display: flex;
+            gap: 6px;
+        }
+        .size-btn {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-muted);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s;
+        }
+        .size-btn:hover { border-color: var(--accent); color: var(--text); }
+        .size-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Download button */
+        .btn-download {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: opacity 0.15s;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+        .btn-download:hover { opacity: 0.88; }
+        .btn-download svg { width: 14px; height: 14px; }
+
+        /* Canvas area */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            overflow: auto;
+            padding: 28px;
+        }
+
+        #card-canvas {
+            border-radius: 14px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(148,163,184,0.08);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        [data-theme="light"] #card-canvas {
+            box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(15,23,42,0.08);
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <a class="toolbar-back" href="javascript:history.back()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        返回
+    </a>
+    <div class="toolbar-divider"></div>
+    <span class="toolbar-title">卡片制作</span>
+    <button class="btn-theme" onclick="toggleTheme()" title="切换主题">
+        <svg id="theme-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"></svg>
+    </button>
+</div>
+
+<div class="layout">
+
+    <!-- Controls -->
+    <div class="controls">
+
+        <div>
+            <div class="ctrl-label">模板</div>
+            <div class="tpl-grid">
+                <button class="tpl-btn active" data-tpl="quote" onclick="setTpl(this)">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+                    金句
+                </button>
+                <button class="tpl-btn" data-tpl="list" onclick="setTpl(this)">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    清单
+                </button>
+                <button class="tpl-btn" data-tpl="cover" onclick="setTpl(this)">
+                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    封面
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <div class="ctrl-label">配色</div>
+            <div class="color-grid" id="color-grid"></div>
+        </div>
+
+        <div>
+            <div class="ctrl-label">字号</div>
+            <div class="size-row">
+                <button class="size-btn" data-size="sm" onclick="setSize(this)">小</button>
+                <button class="size-btn active" data-size="md" onclick="setSize(this)">中</button>
+                <button class="size-btn" data-size="lg" onclick="setSize(this)">大</button>
+            </div>
+        </div>
+
+        <div>
+            <div class="ctrl-label">内容</div>
+            <textarea class="ctrl-textarea" id="card-text" placeholder="输入或粘贴内容..." oninput="render()"></textarea>
+        </div>
+
+        <div>
+            <div class="ctrl-label">署名 <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--text-muted)">(可选)</span></div>
+            <input type="text" class="ctrl-textarea" id="card-source" placeholder="例：@你的公众号" style="min-height:unset;height:36px;resize:none" oninput="render()">
+        </div>
+
+        <button class="btn-download" onclick="download()">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载 PNG
+        </button>
+
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-area">
+        <canvas id="card-canvas" width="1080" height="1080"></canvas>
+    </div>
+</div>
+
+<script>
+const CARD_SIZE = 1080;
+const PREVIEW_SIZE = 480;
+
+const canvas = document.getElementById('card-canvas');
+const ctx = canvas.getContext('2d');
+canvas.style.width = PREVIEW_SIZE + 'px';
+canvas.style.height = PREVIEW_SIZE + 'px';
+
+const THEMES = {
+    purple: { name: '暗紫', bg: ['#0d0d14', '#1e0a3c'], text: '#e8e8f0', accent: '#7c5cfc', muted: '#7a7a9a' },
+    blue:   { name: '深蓝', bg: ['#060d1a', '#0a1929'], text: '#e8e8f0', accent: '#5b8dee', muted: '#6a7a9a' },
+    amber:  { name: '暖金', bg: ['#111108', '#201800'], text: '#f0ede8', accent: '#f59e0b', muted: '#9a9070' },
+    light:  { name: '浅色', bg: ['#f5f5f8', '#eceef5'], text: '#1a1a2e', accent: '#7c5cfc', muted: '#7a7a9a' },
+};
+
+const FONT_SIZES = { sm: 0.8, md: 1.0, lg: 1.25 };
+
+let currentTpl = 'quote';
+let currentTheme = 'purple';
+let currentSize = 'md';
+
+// Build color buttons
+const colorGrid = document.getElementById('color-grid');
+Object.entries(THEMES).forEach(([key, t]) => {
+    const btn = document.createElement('div');
+    btn.className = 'color-btn' + (key === 'purple' ? ' active' : '');
+    btn.dataset.theme = key;
+    btn.title = t.name;
+    btn.style.background = `linear-gradient(135deg, ${t.bg[0]}, ${t.bg[1]})`;
+    btn.onclick = () => setThemeCard(btn);
+    colorGrid.appendChild(btn);
+});
+
+function setTpl(btn) {
+    document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTpl = btn.dataset.tpl;
+    render();
+}
+
+function setThemeCard(btn) {
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTheme = btn.dataset.theme;
+    render();
+}
+
+function setSize(btn) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSize = btn.dataset.size;
+    render();
+}
+
+// Text wrap helper
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const lines = [];
+    for (const paragraph of text.split('\n')) {
+        if (!paragraph.trim()) { lines.push(''); continue; }
+        const words = paragraph.split('');
+        let line = '';
+        for (const ch of words) {
+            const test = line + ch;
+            if (ctx.measureText(test).width > maxWidth && line) {
+                lines.push(line);
+                line = ch;
+            } else {
+                line = test;
+            }
+        }
+        if (line) lines.push(line);
+    }
+    lines.forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
+    return lines.length * lineHeight;
+}
+
+function drawBg(theme) {
+    const grad = ctx.createLinearGradient(0, 0, CARD_SIZE * 0.6, CARD_SIZE);
+    grad.addColorStop(0, theme.bg[0]);
+    grad.addColorStop(1, theme.bg[1]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, CARD_SIZE, CARD_SIZE);
+}
+
+function drawQuote(theme, text, source, scale) {
+    drawBg(theme);
+
+    // Big quote mark
+    ctx.font = `700 ${Math.round(280 * scale)}px sans-serif`;
+    ctx.fillStyle = theme.accent;
+    ctx.globalAlpha = 0.15;
+    ctx.fillText('"', 60, Math.round(320 * scale));
+    ctx.globalAlpha = 1;
+
+    // Accent top bar
+    ctx.fillStyle = theme.accent;
+    ctx.fillRect(80, 90, 80, 6);
+
+    // Main text
+    const fontSize = Math.round(52 * scale);
+    ctx.font = `600 ${fontSize}px -apple-system, 'PingFang SC', sans-serif`;
+    ctx.fillStyle = theme.text;
+    ctx.textBaseline = 'top';
+    const lh = Math.round(fontSize * 1.8);
+    wrapText(ctx, text || '输入你的金句', 80, 160, CARD_SIZE - 160, lh);
+
+    // Divider
+    ctx.fillStyle = theme.accent;
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(80, CARD_SIZE - 180, CARD_SIZE - 160, 1);
+    ctx.globalAlpha = 1;
+
+    // Source
+    if (source) {
+        ctx.font = `400 ${Math.round(34 * scale)}px -apple-system, 'PingFang SC', sans-serif`;
+        ctx.fillStyle = theme.muted;
+        ctx.fillText(source, 80, CARD_SIZE - 140);
+    }
+}
+
+function drawList(theme, text, source, scale) {
+    drawBg(theme);
+
+    const lines = text.split('\n').map(l => l.replace(/^[-•·*\d.]+\s*/, '').trim()).filter(Boolean);
+    const title = lines[0] || '清单标题';
+    const items = lines.slice(1);
+
+    // Title
+    ctx.font = `700 ${Math.round(58 * scale)}px -apple-system, 'PingFang SC', sans-serif`;
+    ctx.fillStyle = theme.text;
+    ctx.textBaseline = 'top';
+    wrapText(ctx, title, 80, 100, CARD_SIZE - 160, Math.round(58 * scale * 1.4));
+
+    // Accent underline
+    const titleMetrics = ctx.measureText(title);
+    ctx.fillStyle = theme.accent;
+    ctx.fillRect(80, Math.round(200 * scale), Math.min(titleMetrics.width, 300 * scale), 5);
+
+    // Items
+    const itemFontSize = Math.round(44 * scale);
+    ctx.font = `400 ${itemFontSize}px -apple-system, 'PingFang SC', sans-serif`;
+    let yOff = Math.round(270 * scale);
+    items.forEach((item, i) => {
+        // Number circle
+        ctx.fillStyle = theme.accent;
+        ctx.beginPath();
+        ctx.arc(80 + Math.round(22 * scale), yOff + Math.round(22 * scale), Math.round(22 * scale), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = `700 ${Math.round(26 * scale)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(i + 1, 80 + Math.round(22 * scale), yOff + Math.round(28 * scale));
+        ctx.textAlign = 'left';
+
+        ctx.font = `400 ${itemFontSize}px -apple-system, 'PingFang SC', sans-serif`;
+        ctx.fillStyle = theme.text;
+        const h = wrapText(ctx, item, 80 + Math.round(60 * scale), yOff, CARD_SIZE - 80 - Math.round(60 * scale) - 80, Math.round(itemFontSize * 1.6));
+        yOff += Math.max(h, Math.round(60 * scale)) + Math.round(28 * scale);
+    });
+
+    if (source) {
+        ctx.font = `400 ${Math.round(32 * scale)}px -apple-system, 'PingFang SC', sans-serif`;
+        ctx.fillStyle = theme.muted;
+        ctx.fillText(source, 80, CARD_SIZE - 100);
+    }
+}
+
+function drawCover(theme, text, source, scale) {
+    drawBg(theme);
+
+    // Diagonal accent block
+    ctx.save();
+    ctx.fillStyle = theme.accent;
+    ctx.globalAlpha = 0.08;
+    ctx.beginPath();
+    ctx.moveTo(CARD_SIZE * 0.5, 0);
+    ctx.lineTo(CARD_SIZE, 0);
+    ctx.lineTo(CARD_SIZE, CARD_SIZE * 0.6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // Accent bar left
+    ctx.fillStyle = theme.accent;
+    ctx.fillRect(0, 0, 10, CARD_SIZE);
+
+    // Main text
+    const fontSize = Math.round(72 * scale);
+    ctx.font = `700 ${fontSize}px -apple-system, 'PingFang SC', sans-serif`;
+    ctx.fillStyle = theme.text;
+    ctx.textBaseline = 'middle';
+    const lh = Math.round(fontSize * 1.5);
+    const lines = [];
+    for (const para of (text || '封面标题').split('\n')) {
+        let line = '';
+        for (const ch of para) {
+            if (ctx.measureText(line + ch).width > CARD_SIZE - 200 && line) {
+                lines.push(line); line = ch;
+            } else line = line + ch;
+        }
+        if (line) lines.push(line);
+    }
+    const totalH = lines.length * lh;
+    const startY = (CARD_SIZE - totalH) / 2;
+    ctx.textBaseline = 'top';
+    lines.forEach((l, i) => ctx.fillText(l, 80, startY + i * lh));
+
+    // Bottom strip
+    ctx.fillStyle = theme.accent;
+    ctx.fillRect(0, CARD_SIZE - 80, CARD_SIZE, 80);
+    if (source) {
+        ctx.font = `600 ${Math.round(34 * scale)}px -apple-system, 'PingFang SC', sans-serif`;
+        ctx.fillStyle = '#fff';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(source, 80, CARD_SIZE - 40);
+    }
+}
+
+function render() {
+    const theme = THEMES[currentTheme];
+    const scale = FONT_SIZES[currentSize];
+    const text = document.getElementById('card-text').value;
+    const source = document.getElementById('card-source').value;
+    ctx.clearRect(0, 0, CARD_SIZE, CARD_SIZE);
+
+    if (currentTpl === 'quote') drawQuote(theme, text, source, scale);
+    else if (currentTpl === 'list') drawList(theme, text, source, scale);
+    else drawCover(theme, text, source, scale);
+}
+
+function download() {
+    const link = document.createElement('a');
+    link.download = `card-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+// Load content from localStorage if available
+const saved = localStorage.getItem('card_content');
+if (saved) {
+    document.getElementById('card-text').value = saved;
+    localStorage.removeItem('card_content');
+}
+
+render();
+
+// Theme
+function toggleTheme() {
+    const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = curr === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.getElementById('theme-icon');
+    if (!icon) return;
+    if (theme === 'light') {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    }
+}
+
+updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'dark');
+</script>
+</body>
+</html>

@@ -49,11 +49,6 @@ def translate_to_chinese(text: str) -> str:
         
     translator = GoogleTranslator(source='auto', target='zh-CN')
     
-    # Limit text to first 5000 characters to prevent extremely long processing
-    # and potential rate limits during translation
-    if len(text) > 5000:
-        text = text[:5000] + "..."
-        
     chunks = split_text(text)
     translated_chunks = []
     

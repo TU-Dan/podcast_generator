@@ -16,10 +16,16 @@ load_dotenv()
 
 from curl_cffi import requests as cffi_requests
 from services.extractor import extract_content, download_youtube_audio
-from services.llm import distill_and_translate, format_transcript, chunk_text, polish_chunk, detect_language, generate_tags, generate_title, CHUNK_THRESHOLD
+from services.llm import distill_and_translate, format_transcript, chunk_text, polish_chunk, detect_language, generate_tags, generate_title, generate_social_post, extract_insights, generate_daily_brief, CHUNK_THRESHOLD
 from services.tts import generate_audio_sync
 from services.rss import add_episode, clean_description
-from services.db import init_db, add_article, update_tags, get_untagged_articles
+from services.db import (
+    init_db, add_article, update_tags, get_untagged_articles,
+    delete_article, update_article_title, update_insights,
+    add_feed, list_feeds, delete_feed,
+    list_inbox, count_inbox, update_feed_item_status, get_article,
+)
+from services.feeds import refresh_all_feeds, refresh_feed, resolve_feed_url
 
 
 def _retag_untagged():
@@ -44,8 +50,10 @@ def _retag_untagged():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
     init_db()
     threading.Thread(target=_retag_untagged, daemon=True).start()
+    asyncio.create_task(refresh_all_feeds())
     yield
 
 
@@ -367,9 +375,43 @@ async def library(request: Request):
     return templates.TemplateResponse(request=request, name="library.html")
 
 
+@app.get("/card", response_class=HTMLResponse)
+async def card_page(request: Request):
+    return templates.TemplateResponse(request=request, name="card.html")
+
+
 @app.get("/generate", response_class=HTMLResponse)
 async def generate_page(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/api/brief")
+async def api_brief():
+    import random
+    from services.db import list_articles
+    all_articles = list_articles(limit=200)
+    if not all_articles:
+        return JSONResponse({"error": "知识库暂无文章"}, status_code=404)
+
+    # Prefer articles with summaries; mix recent + random older
+    with_summary = [a for a in all_articles if a.get("summary")]
+    pool = with_summary if with_summary else all_articles
+
+    recent = pool[:10]
+    older = pool[10:]
+    picks = random.sample(recent, min(3, len(recent)))
+    if older:
+        picks += random.sample(older, min(2, len(older)))
+    random.shuffle(picks)
+
+    brief = generate_daily_brief(picks)
+    if not brief:
+        return JSONResponse({"error": "生成失败"}, status_code=500)
+
+    return JSONResponse({
+        "brief": brief,
+        "articles": [{"id": a["id"], "title": a["title"]} for a in picks],
+    })
 
 
 @app.get("/api/tags")
@@ -421,6 +463,23 @@ async def get_article_content(article_id: str):
         return JSONResponse({"error": "file not found"}, status_code=404)
 
 
+@app.delete("/api/articles/{article_id}")
+async def delete_article_route(article_id: str):
+    ok = delete_article(article_id)
+    return JSONResponse({"ok": ok}, status_code=200 if ok else 404)
+
+
+@app.patch("/api/articles/{article_id}")
+async def patch_article(article_id: str, request: Request):
+    from services.db import get_article
+    if not get_article(article_id):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    body = await request.json()
+    if "title" in body:
+        update_article_title(article_id, body["title"])
+    return JSONResponse({"ok": True})
+
+
 @app.put("/api/articles/{article_id}/tags")
 async def save_article_tags(article_id: str, request: Request):
     from services.db import get_article, update_tags
@@ -430,6 +489,124 @@ async def save_article_tags(article_id: str, request: Request):
     tags = body.get("tags", [])
     update_tags(article_id, tags)
     return JSONResponse({"ok": True})
+
+
+@app.post("/api/articles/{article_id}/insights")
+async def generate_insights(article_id: str):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"error": "not found"}, status_code=404)
+    file_path = article["article_md_path"].lstrip("/")
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return JSONResponse({"error": "file not found"}, status_code=404)
+    insights = extract_insights(content)
+    if not insights:
+        return JSONResponse({"error": "提取失败，请检查 API Key"}, status_code=500)
+    update_insights(article_id, insights)
+    return JSONResponse({"ok": True, "insights": insights})
+
+
+@app.post("/api/articles/{article_id}/post")
+async def generate_post(article_id: str, request: Request):
+    from services.db import get_article
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"error": "not found"}, status_code=404)
+
+    body = await request.json()
+    format_type = body.get("format", "wechat")
+    pain_point = body.get("pain_point", "")
+
+    file_path = article["article_md_path"].lstrip("/")
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return JSONResponse({"error": "file not found"}, status_code=404)
+
+    result = generate_social_post(content, format_type=format_type, pain_point=pain_point)
+    if result is None:
+        return JSONResponse({"error": "生成失败，请检查 API Key"}, status_code=500)
+    from services.db import save_output
+    save_output(article_id, format_type, result, pain_point)
+    return JSONResponse({"ok": True, "content": result})
+
+
+@app.get("/api/articles/{article_id}/outputs")
+async def api_list_outputs(article_id: str):
+    from services.db import list_outputs
+    return JSONResponse(list_outputs(article_id))
+
+
+@app.delete("/api/outputs/{output_id}")
+async def api_delete_output(output_id: str):
+    from services.db import delete_output
+    delete_output(output_id)
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/articles/{article_id}/pain-points")
+async def api_suggest_pain_points(article_id: str):
+    from services.db import get_article
+    from services.llm import suggest_pain_points
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    try:
+        with open(article["article_md_path"].lstrip("/"), "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return JSONResponse({"ok": False, "error": "file not found"}, status_code=404)
+    points = suggest_pain_points(content)
+    return JSONResponse({"ok": True, "points": points})
+
+
+@app.post("/api/articles/{article_id}/batch-slice")
+async def api_batch_slice(article_id: str, request: Request):
+    from services.db import get_article, save_output
+    from services.llm import generate_social_post
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    body = await request.json()
+    pain_points = body.get("pain_points", [])[:5]
+    format_type = body.get("format", "wechat")
+    if not pain_points:
+        return JSONResponse({"ok": False, "error": "no pain points"}, status_code=400)
+    try:
+        with open(article["article_md_path"].lstrip("/"), "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return JSONResponse({"ok": False, "error": "file not found"}, status_code=404)
+    results = []
+    for pp in pain_points:
+        text = generate_social_post(content, format_type=format_type, pain_point=pp)
+        if text:
+            save_output(article_id, format_type, text, pp)
+            results.append({"pain_point": pp, "content": text})
+    return JSONResponse({"ok": True, "results": results})
+
+
+@app.post("/api/articles/{article_id}/batch-cards")
+async def api_batch_cards(article_id: str):
+    from services.db import get_article, save_output
+    from services.llm import batch_generate_cards
+    article = get_article(article_id)
+    if not article or not article.get("article_md_path"):
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    try:
+        with open(article["article_md_path"].lstrip("/"), "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return JSONResponse({"ok": False, "error": "file not found"}, status_code=404)
+    cards = batch_generate_cards(content, count=4)
+    for card in cards:
+        save_output(article_id, "card", card, "")
+    return JSONResponse({"ok": True, "cards": cards})
 
 
 @app.post("/api/articles/{article_id}/content")
@@ -448,6 +625,239 @@ async def save_article_content(article_id: str, request: Request):
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
+
+@app.get("/api/highlights")
+async def api_all_highlights():
+    """Return all highlights across all articles, joined with article title."""
+    from services.db import get_conn
+    with get_conn() as conn:
+        rows = conn.execute("""
+            SELECT h.*, a.title as article_title
+            FROM highlights h
+            LEFT JOIN articles a ON h.article_id = a.id
+            ORDER BY h.created_at DESC
+        """).fetchall()
+    return JSONResponse([dict(r) for r in rows])
+
+
+@app.post("/api/articles/{article_id}/highlights")
+async def api_add_highlight(article_id: str, request: Request):
+    body = await request.json()
+    text = body.get("text", "").strip()
+    if not text:
+        return JSONResponse({"ok": False, "error": "empty"}, status_code=400)
+    from services.db import add_highlight
+    hid = add_highlight(article_id, text)
+    return JSONResponse({"ok": True, "id": hid})
+
+
+@app.get("/api/articles/{article_id}/highlights")
+async def api_list_highlights(article_id: str):
+    from services.db import list_highlights
+    return JSONResponse(list_highlights(article_id))
+
+
+@app.post("/api/highlights/{highlight_id}/refine")
+async def api_refine_highlight(highlight_id: str):
+    from services.db import get_highlight, update_highlight_note
+    from services.llm import refine_atomic_note
+    h = get_highlight(highlight_id)
+    if not h:
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    note = refine_atomic_note(h["text"])
+    if note:
+        update_highlight_note(highlight_id, note)
+    return JSONResponse({"ok": bool(note), "note": note})
+
+
+@app.delete("/api/highlights/{highlight_id}")
+async def api_delete_highlight(highlight_id: str):
+    from services.db import delete_highlight
+    delete_highlight(highlight_id)
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/articles/{article_id}/related")
+async def api_related_articles(article_id: str):
+    import json as _json
+    from services.db import list_highlights, list_articles, get_article
+    from services.llm import find_related_articles
+    article = get_article(article_id)
+    if not article:
+        return JSONResponse({"ok": False}, status_code=404)
+    highlights = list_highlights(article_id)
+    highlight_texts = [h.get("note") or h["text"] for h in highlights]
+    if not highlight_texts:
+        return JSONResponse({"ok": True, "related": []})
+    all_arts = list_articles(limit=200)
+    candidates = [a for a in all_arts if a["id"] != article_id]
+    current_tags = set(_json.loads(article.get("tags") or "[]"))
+    if current_tags:
+        scored = sorted(candidates, key=lambda c: -len(current_tags & set(_json.loads(c.get("tags") or "[]"))))
+        candidates = scored[:20]
+    else:
+        candidates = candidates[:20]
+    related = find_related_articles(article["title"], highlight_texts, candidates)
+    return JSONResponse({"ok": True, "related": related})
+
+
+@app.post("/api/save/text")
+async def quick_save_text(request: Request):
+    """Save pasted text directly into the knowledge base (no LLM)."""
+    body = await request.json()
+    text = body.get("text", "").strip()
+    if not text:
+        return JSONResponse({"error": "text required"}, status_code=400)
+    title = body.get("title", "").strip() or generate_title(text)
+    script_url = save_script(title, text)
+    summary = text[:200].replace("\n", " ")
+    article_id = add_article(
+        title=title,
+        source_type="txt",
+        summary=summary,
+        article_md_path=script_url,
+        word_count=len(text),
+    )
+    return JSONResponse({"ok": True, "article_id": article_id, "title": title})
+
+
+@app.post("/api/save/url")
+async def quick_save_url(request: Request):
+    """Save a URL immediately without LLM processing."""
+    body = await request.json()
+    url = body.get("url", "").strip()
+    if not url:
+        return JSONResponse({"error": "url required"}, status_code=400)
+
+    source_type = "youtube" if ("youtube.com" in url or "youtu.be" in url) else "url"
+    text, thumbnail_url = extract_content(url, source_type)
+    if not text:
+        return JSONResponse({"error": "无法提取内容，请检查链接"}, status_code=422)
+
+    title = generate_title(text)
+    episode_image = download_thumbnail(thumbnail_url) if thumbnail_url else None
+    summary = text[:200].replace("\n", " ")
+
+    article_id = add_article(
+        title=title,
+        source_url=url,
+        source_type=source_type,
+        summary=summary,
+        image_url=episode_image,
+        word_count=len(text),
+    )
+    return JSONResponse({"ok": True, "article_id": article_id, "title": title})
+
+
+# ── Feed / Inbox endpoints ────────────────────────────────────────────────────
+
+@app.get("/api/feeds")
+async def api_list_feeds():
+    return JSONResponse(list_feeds())
+
+
+@app.post("/api/feeds")
+async def api_add_feed(request: Request):
+    body = await request.json()
+    url = body.get("url", "").strip()
+    name = body.get("name", "").strip()
+    if not url:
+        return JSONResponse({"ok": False, "error": "url required"}, status_code=400)
+    rss_url, feed_type = await resolve_feed_url(url)
+    if not name:
+        name = url.split("/")[-1] or url
+    feed_id = add_feed(rss_url, name, feed_type)
+    feeds = list_feeds()
+    feed = next(f for f in feeds if f["id"] == feed_id)
+    # Kick off background fetch for this new feed
+    import asyncio
+    asyncio.create_task(refresh_feed(feed))
+    return JSONResponse({"ok": True, "id": feed_id, "url": rss_url, "feed_type": feed_type})
+
+
+@app.delete("/api/feeds/{feed_id}")
+async def api_delete_feed(feed_id: str):
+    delete_feed(feed_id)
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/feeds/refresh")
+async def api_refresh_feeds():
+    n = await refresh_all_feeds()
+    return JSONResponse({"ok": True, "new_items": n})
+
+
+@app.get("/api/inbox")
+async def api_inbox(min_score: int = 0):
+    items = list_inbox(min_score)
+    return JSONResponse({"items": items, "count": len(items)})
+
+
+@app.get("/api/inbox/count")
+async def api_inbox_count():
+    return JSONResponse({"count": count_inbox()})
+
+
+@app.post("/api/inbox/{item_id}/save")
+async def api_inbox_save(item_id: str, background_tasks: BackgroundTasks):
+    from services.db import get_conn
+    with get_conn() as conn:
+        row = conn.execute("SELECT * FROM feed_items WHERE id=?", (item_id,)).fetchone()
+    if not row:
+        return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+    item = dict(row)
+    update_feed_item_status(item_id, "saved")
+
+    # Kick off full extraction in background
+    from services.extractor import extract_from_url
+    from services.llm import detect_language, translate_full_article, generate_tags as gen_tags
+
+    async def _save():
+        try:
+            text, image_url_extracted = extract_from_url(item["url"])
+            title = item["title"]
+            tags = []
+            if not text:
+                script_url = None
+                summary = item.get("description", "")[:200]
+            elif detect_language(text) == 'en':
+                zh, tags = translate_full_article(text)
+                script_content = f"{zh}\n\n---\n\n{text}" if zh else text
+                script_url = save_script(title, script_content)
+                # Summary from first non-empty paragraph of translation
+                first_para = next((p.strip() for p in zh.split("\n") if len(p.strip()) > 20), "")
+                summary = first_para[:200]
+            else:
+                tags = gen_tags(title, text[:3000])
+                script_url = save_script(title, text)
+                first_para = next((p.strip() for p in text.split("\n") if len(p.strip()) > 20), "")
+                summary = first_para[:200]
+            article_id = add_article(
+                title=title,
+                source_url=item["url"],
+                source_type="url",
+                summary=summary,
+                image_url=image_url_extracted,
+                word_count=len(text),
+                article_md_path=script_url,
+            )
+            if tags:
+                update_tags(article_id, tags)
+        except Exception as e:
+            print(f"[inbox] save error for {item['url']}: {e}")
+
+    import asyncio
+    asyncio.create_task(_save())
+    return JSONResponse({"ok": True})
+
+
+@app.post("/api/inbox/{item_id}/dismiss")
+async def api_inbox_dismiss(item_id: str):
+    update_feed_item_status(item_id, "dismissed")
+    return JSONResponse({"ok": True})
+
+
+# ── Publish ───────────────────────────────────────────────────────────────────
 
 @app.post("/publish")
 async def publish_to_pages():

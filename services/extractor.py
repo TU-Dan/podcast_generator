@@ -8,28 +8,42 @@ import trafilatura
 from PyPDF2 import PdfReader
 
 
-def extract_from_url(url: str) -> tuple[str, str | None]:
-    """Extract text and og:image thumbnail from a web page."""
-    downloaded = trafilatura.fetch_url(url)
-    if not downloaded:
-        return "", None
+def _fetch_html(url: str) -> str | None:
+    """Fetch HTML with trafilatura, falling back to curl_cffi for sites with bot protection."""
+    html = trafilatura.fetch_url(url)
+    if html:
+        return html
+    try:
+        from curl_cffi import requests as cffi_requests
+        resp = cffi_requests.get(url, impersonate="chrome", timeout=15)
+        if resp.status_code == 200 and resp.text:
+            return resp.text
+    except Exception as e:
+        print(f"curl_cffi fallback failed: {e}")
+    return None
 
-    text = trafilatura.extract(downloaded) or ""
 
-    # Extract og:image
-    thumbnail = None
+def _extract_og_image(html: str) -> str | None:
     m = re.search(
         r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
-        downloaded, re.IGNORECASE
+        html, re.IGNORECASE
     )
     if not m:
         m = re.search(
             r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
-            downloaded, re.IGNORECASE
+            html, re.IGNORECASE
         )
-    if m:
-        thumbnail = m.group(1)
+    return m.group(1) if m else None
 
+
+def extract_from_url(url: str) -> tuple[str, str | None]:
+    """Extract text and og:image thumbnail from a web page."""
+    html = _fetch_html(url)
+    if not html:
+        return "", None
+
+    text = trafilatura.extract(html) or ""
+    thumbnail = _extract_og_image(html)
     return text, thumbnail
 
 

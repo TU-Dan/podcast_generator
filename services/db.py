@@ -32,7 +32,56 @@ def init_db():
                 audio_length INTEGER,
                 image_url TEXT,
                 created_at TEXT,
-                word_count INTEGER
+                word_count INTEGER,
+                insights TEXT
+            )
+        """)
+        # Migration: add insights column if it doesn't exist
+        try:
+            conn.execute("ALTER TABLE articles ADD COLUMN insights TEXT")
+        except Exception:
+            pass
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS feeds (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                url TEXT NOT NULL,
+                feed_type TEXT DEFAULT 'rss',
+                last_fetched_at TEXT,
+                created_at TEXT
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS feed_items (
+                id TEXT PRIMARY KEY,
+                feed_id TEXT REFERENCES feeds(id) ON DELETE CASCADE,
+                feed_name TEXT,
+                title TEXT,
+                url TEXT,
+                description TEXT,
+                published_at TEXT,
+                relevance_score INTEGER DEFAULT 50,
+                status TEXT DEFAULT 'pending',
+                created_at TEXT
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS highlights (
+                id TEXT PRIMARY KEY,
+                article_id TEXT NOT NULL,
+                text TEXT NOT NULL,
+                note TEXT,
+                created_at TEXT
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS outputs (
+                id TEXT PRIMARY KEY,
+                article_id TEXT NOT NULL,
+                format_type TEXT,
+                pain_point TEXT,
+                content TEXT,
+                created_at TEXT
             )
         """)
         conn.commit()
@@ -198,6 +247,15 @@ def get_untagged_articles() -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def update_insights(article_id: str, insights: dict):
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE articles SET insights=? WHERE id=?",
+            (json.dumps(insights, ensure_ascii=False), article_id)
+        )
+        conn.commit()
+
+
 def update_tags(article_id: str, tags: list[str]):
     with get_conn() as conn:
         conn.execute(
@@ -221,9 +279,188 @@ def list_all_tags() -> list[dict]:
     return [{"tag": t, "count": freq[t]} for t in sorted(freq, key=lambda t: -freq[t])]
 
 
+def delete_article(article_id: str) -> bool:
+    with get_conn() as conn:
+        row = conn.execute("SELECT article_md_path, transcript_path FROM articles WHERE id=?", (article_id,)).fetchone()
+        cur = conn.execute("DELETE FROM articles WHERE id=?", (article_id,))
+        conn.commit()
+    if row:
+        for path in (row[0], row[1]):
+            if path:
+                try:
+                    os.remove(path.lstrip("/"))
+                except FileNotFoundError:
+                    pass
+    return cur.rowcount > 0
+
+
+def update_article_title(article_id: str, title: str):
+    with get_conn() as conn:
+        conn.execute("UPDATE articles SET title=? WHERE id=?", (title, article_id))
+        conn.commit()
+
+
+# ── Feed management ──────────────────────────────────────────────────────────
+
+def add_feed(url: str, name: str, feed_type: str = "rss") -> str:
+    feed_id = uuid.uuid4().hex
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT INTO feeds (id, url, name, feed_type, created_at) VALUES (?,?,?,?,?)",
+            (feed_id, url, name, feed_type, now),
+        )
+        conn.commit()
+    return feed_id
+
+
+def list_feeds() -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute("SELECT * FROM feeds ORDER BY created_at DESC").fetchall()
+    return [dict(r) for r in rows]
+
+
+def delete_feed(feed_id: str):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM feed_items WHERE feed_id=?", (feed_id,))
+        conn.execute("DELETE FROM feeds WHERE id=?", (feed_id,))
+        conn.commit()
+
+
+def update_feed_fetched(feed_id: str):
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE feeds SET last_fetched_at=? WHERE id=?",
+            (datetime.now(timezone.utc).isoformat(), feed_id),
+        )
+        conn.commit()
+
+
+def upsert_feed_items(items: list[dict]):
+    """Insert new feed items, skip duplicates by url."""
+    with get_conn() as conn:
+        existing = {r[0] for r in conn.execute("SELECT url FROM feed_items").fetchall()}
+        for item in items:
+            if item["url"] in existing:
+                continue
+            conn.execute(
+                """INSERT INTO feed_items
+                   (id, feed_id, feed_name, title, url, description, published_at, relevance_score, status, created_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                (
+                    uuid.uuid4().hex,
+                    item["feed_id"],
+                    item.get("feed_name", ""),
+                    item["title"],
+                    item["url"],
+                    item.get("description", ""),
+                    item.get("published_at", ""),
+                    item.get("relevance_score", 50),
+                    "pending",
+                    datetime.now(timezone.utc).isoformat(),
+                ),
+            )
+        conn.commit()
+
+
+def list_inbox(min_score: int = 0) -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute(
+            """SELECT * FROM feed_items WHERE status='pending' AND relevance_score >= ?
+               ORDER BY relevance_score DESC, created_at DESC LIMIT 100""",
+            (min_score,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def count_inbox() -> int:
+    with get_conn() as conn:
+        return conn.execute(
+            "SELECT COUNT(*) FROM feed_items WHERE status='pending'"
+        ).fetchone()[0]
+
+
+def update_feed_item_status(item_id: str, status: str):
+    with get_conn() as conn:
+        conn.execute("UPDATE feed_items SET status=? WHERE id=?", (status, item_id))
+        conn.commit()
+
+
+# ── Article counts ────────────────────────────────────────────────────────────
+
 def count_by_type() -> dict:
     with get_conn() as conn:
         rows = conn.execute(
             "SELECT source_type, COUNT(*) as n FROM articles GROUP BY source_type"
         ).fetchall()
     return {r["source_type"]: r["n"] for r in rows}
+
+
+# ── Highlights ────────────────────────────────────────────────────────────────
+
+def add_highlight(article_id: str, text: str) -> str:
+    hid = uuid.uuid4().hex
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT INTO highlights (id, article_id, text, created_at) VALUES (?,?,?,?)",
+            (hid, article_id, text, now),
+        )
+        conn.commit()
+    return hid
+
+
+def list_highlights(article_id: str) -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM highlights WHERE article_id=? ORDER BY created_at ASC",
+            (article_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def get_highlight(highlight_id: str) -> dict | None:
+    with get_conn() as conn:
+        row = conn.execute("SELECT * FROM highlights WHERE id=?", (highlight_id,)).fetchone()
+    return dict(row) if row else None
+
+
+def update_highlight_note(highlight_id: str, note: str):
+    with get_conn() as conn:
+        conn.execute("UPDATE highlights SET note=? WHERE id=?", (note, highlight_id))
+        conn.commit()
+
+
+def delete_highlight(highlight_id: str):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM highlights WHERE id=?", (highlight_id,))
+        conn.commit()
+
+
+# ── Outputs ───────────────────────────────────────────────────────────────────
+
+def save_output(article_id: str, format_type: str, content: str, pain_point: str = "") -> str:
+    oid = uuid.uuid4().hex
+    now = datetime.now(timezone.utc).isoformat()
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT INTO outputs (id, article_id, format_type, pain_point, content, created_at) VALUES (?,?,?,?,?,?)",
+            (oid, article_id, format_type, pain_point, content, now),
+        )
+        conn.commit()
+    return oid
+
+
+def list_outputs(article_id: str) -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT * FROM outputs WHERE article_id=? ORDER BY created_at DESC LIMIT 50",
+            (article_id,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def delete_output(output_id: str):
+    with get_conn() as conn:
+        conn.execute("DELETE FROM outputs WHERE id=?", (output_id,))
+        conn.commit()
