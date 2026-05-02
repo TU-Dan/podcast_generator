@@ -1,206 +1,32 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Mon, 27 Apr 2026 23:44:43 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>段永平投资精华</title><description>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Sat, 02 May 2026 13:37:52 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>付鹏：加密资产正走向主流金融</title><description>独家！2026.4.23 香港WEB3大会付鹏 25分钟完整版 #付鹏的财经世界 #付鹏 #金融 #投资逻辑
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/de2118842ff94a47ab1a433e9f44af6e.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/de2118842ff94a47ab1a433e9f44af6e.mp3" length="35136" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 07:17:04 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+1. 加密资产正经历从早期信仰驱动向成熟金融资产演进的关键转折，2025年将成为合规落地与主流金融机构全面介入的元年 
+2. 当前加密资产的发展路径复刻了1970–80年代传统金融衍生品（FiCC）的演进逻辑：技术突破（区块链/算力/AI）驱动制度重构、监管跟进、资产纳入专业投资组合 
+3. 美国CFTC已明确将比特币界定为可交易商品，这一法定属性成为传统资本理解并配置加密资产的核心依据，不再依赖原教旨主义叙事 
+4. 流动性收紧周期下，加密资产与传统估值资产同步出现杀估值行...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/7b2e5119b17644c08ce91c2a4cd6dad2.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/7b2e5119b17644c08ce91c2a4cd6dad2.mp3" length="24119853" type="audio/mpeg"/><pubDate>Thu, 30 Apr 2026 05:06:27 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/881aefce5b6c4880b7743905c89fda8a.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>独家！2026.4.23 香港WEB3大会付鹏 25分钟完整版 #付鹏的财经世界 #付鹏 #金融 #投资逻辑
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</itunes:summary></item><item><title>段永平投资精华</title><description>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+1. 加密资产正经历从早期信仰驱动向成熟金融资产演进的关键转折，2025年将成为合规落地与主流金融机构全面介入的元年 
+2. 当前加密资产的发展路径复刻了1970–80年代传统金融衍生品（FiCC）的演进逻辑：技术突破（区块链/算力/AI）驱动制度重构、监管跟进、资产纳入专业投资组合 
+3. 美国CFTC已明确将比特币界定为可交易商品，这一法定属性成为传统资本理解并配置加密资产的核心依据，不再依赖原教旨主义叙事 
+4. 流动性收紧周期下，加密资产与传统估值资产同步出现杀估值行...</itunes:summary></item><item><title>马修麦康纳：别半途而废</title><description>The Most Valuable 20 Minutes You'll Spend Today | Matthew McConaughey Motivation.
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/781312ae1b45467bb36383cee723ad36.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/781312ae1b45467bb36383cee723ad36.mp3" length="4807296" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 07:22:57 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+ called him at 7:36 p.m. I remember the number. Hey, pop. Hey, what's up, monkey man? Listen, can I talk about something? Sure. Said, "Dad, I don't want to go to law school anymore. I want t...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/48a6821978484a10a245362c9ac19929.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/48a6821978484a10a245362c9ac19929.mp3" length="2985264" type="audio/mpeg"/><pubDate>Thu, 30 Apr 2026 07:05:01 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/8304037b8e474635b1719e8c24906024.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>The Most Valuable 20 Minutes You'll Spend Today | Matthew McConaughey Motivation.
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</itunes:summary></item><item><title>段永平投资精华</title><description>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+ called him at 7:36 p.m. I remember the number. Hey, pop. Hey, what's up, monkey man? Listen, can I talk about something? Sure. Said, "Dad, I don't want to go to law school anymore. I want t...</itunes:summary></item><item><title>从Vibe Coding到Agentic工程</title><description>Andrej Karpathy: From Vibe Coding to Agentic Engineering
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/47b79187043c4266a13fe2db15da68df.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/47b79187043c4266a13fe2db15da68df.mp3" length="6230592" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 07:23:47 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>【段永平全部视频精华大汇总】30年认知精华，1条视频讲透丨段永平雪球访谈丨段永平浙大访谈丨段永平波士堂丨段永平北大总裁班丨段永平做客网易财经丨段永平步步高十周年丨段永平王石共同说丨财富人生丨资本人物
+ We're so excited for our very first special guest. He has helped build modern AI, then explain modern AI, and then occasionally rename modern AI. He actually helped co-ound open AAI right inside of this office. Was...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/1e507ea3299041558a46a5cf68868779.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/1e507ea3299041558a46a5cf68868779.mp3" length="5065056" type="audio/mpeg"/><pubDate>Sat, 02 May 2026 02:13:45 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/61e64564d2f9461e93a578312eb1a390.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>Andrej Karpathy: From Vibe Coding to Agentic Engineering
 
-请看时间轴查阅：
-00:00 【一、投资方法篇】
-00:15 你从巴菲特身上学到的最重要的东西是什么？
-00:37 好公司有什么特点？
-00:59 为什么说投资简单但不容易？
-01:13 投资中最重...</itunes:summary></item><item><title>The War Between Who You Are &amp; Who You Could Be - Jordan Peterson</title><description>The War Between Who You Are &amp; Who You Could Be - Jordan Peterson (4K)
+ We're so excited for our very first special guest. He has helped build modern AI, then explain modern AI, and then occasionally rename modern AI. He actually helped co-ound open AAI right inside of this office. Was...</itunes:summary></item><item><title>习惯堆叠：掌控高效一天</title><description>Habit Stacking: Structure Your Day for Peak Focus | James Clear &amp; Dr. Andrew Huberman
 
- you say you are mor...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/67c430e599f44e939d2daf30944a9666.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/67c430e599f44e939d2daf30944a9666.mp3" length="4739328" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 07:48:56 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>The War Between Who You Are &amp; Who You Could Be - Jordan Peterson (4K)
+ So, let's talk a little bit about timing and habits and sequencing because I I do think that it's an important lever that you can pull on for building habits. So, first is as a general...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/b691243a11894ac7bac86567ac1f4200.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/b691243a11894ac7bac86567ac1f4200.mp3" length="2115216" type="audio/mpeg"/><pubDate>Sat, 02 May 2026 03:16:20 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/b1a40edbef32465f9ac22e4db944a4de.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>Habit Stacking: Structure Your Day for Peak Focus | James Clear &amp; Dr. Andrew Huberman
 
- you say you are mor...</itunes:summary></item><item><title>DanKoe - How to become dangerously creative</title><description>How to become dangerously creative
+ So, let's talk a little bit about timing and habits and sequencing because I I do think that it's an important lever that you can pull on for building habits. So, first is as a general...</itunes:summary></item><item><title>专注力修炼：零干扰写作法</title><description>How to Avoid Distractions &amp; Stay Focused | Steven Pressfield &amp; Dr. Andrew Huberman
 
-Build 2 hour content system in 14 days (writing challenge starts April 7th, join before then): https://stan.store/thedankoe/p/build-a-2hour-content-ecosystem-in-30-...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/73e252b2233944efb627323477aee40b.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/73e252b2233944efb627323477aee40b.mp3" length="3115728" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 09:37:51 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>How to become dangerously creative
+ when you sit down to write, how many times in the first 10 minutes do you think your mind flits to something else? I mean, you're now a pro. Like, you've written many books and you know wh...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/a8b2bfcdd47e4bbcb8c414eabbea7e1e.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/a8b2bfcdd47e4bbcb8c414eabbea7e1e.mp3" length="3901968" type="audio/mpeg"/><pubDate>Sat, 02 May 2026 12:52:13 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/deb59f75742446ce90b2b768ee81d461.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>How to Avoid Distractions &amp; Stay Focused | Steven Pressfield &amp; Dr. Andrew Huberman
 
-Build 2 hour content system in 14 days (writing challenge starts April 7th, join before then): https://stan.store/thedankoe/p/build-a-2hour-content-ecosystem-in-30-...</itunes:summary></item><item><title>DanKoe - How to become dangerously creative （第1段/共3段）</title><description>How to become dangerously creative
+ when you sit down to write, how many times in the first 10 minutes do you think your mind flits to something else? I mean, you're now a pro. Like, you've written many books and you know wh...</itunes:summary></item><item><title>成为理想自我的秘诀</title><description>How to Become Your Ideal Self | James Clear &amp; Dr. Andrew Huberman
 
- Over the past few weeks, I've...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/6aab7bd0346a401a98419209f0cdfa51.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/6aab7bd0346a401a98419209f0cdfa51.mp3" length="5308848" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 09:50:18 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>How to become dangerously creative
+ For a long time, I wrestled with this question of do I have to be dissatisfied to be driven? Is is that part of it? Is that is part of it that I have this vision for where I want to be or what I want to ac...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/d512119ec25843929242087f0cc63e4f.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/d512119ec25843929242087f0cc63e4f.mp3" length="3391056" type="audio/mpeg"/><pubDate>Sat, 02 May 2026 13:14:26 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/9029c4ee4fc64ec3ab53a36d30c3322a.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>How to Become Your Ideal Self | James Clear &amp; Dr. Andrew Huberman
 
- Over the past few weeks, I've...</itunes:summary></item><item><title>DanKoe - How to become dangerously creative （第2段/共3段）</title><description>ideo goes one week by the time this video goes one week by the time this video goes out. It's going to&lt;00:12:...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/27a5f7b586084365bb2055bc70811e48.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/27a5f7b586084365bb2055bc70811e48.mp3" length="4826880" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 09:52:35 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>ideo goes one week by the time this video goes one week by the time this video goes out. It's going to&lt;00:12:...</itunes:summary></item><item><title>DanKoe - How to become dangerously creative （第3段/共3段）</title><description>camera, this piece of technology is just incredible. I don't technology is just incredible. I...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/0e1d877e35a54b7fa1be30136a37b851.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/0e1d877e35a54b7fa1be30136a37b851.mp3" length="4329936" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 09:54:12 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>camera, this piece of technology is just incredible. I don't technology is just incredible. I...</itunes:summary></item><item><title>DanKoe - How To Think Like A Strategic Genius</title><description>How To Think Like A Strategic Genius (5-Dimensional Thinking)
-
-How to think better: notice when you think stupidly and stop it.
-
-Eden – your AI assistant and creative workflow: https://eden.so/dan-yt
-...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/dea06c117cb9482a9b6a3a4b09af68c3.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/dea06c117cb9482a9b6a3a4b09af68c3.mp3" length="5902848" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 10:05:18 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>How To Think Like A Strategic Genius (5-Dimensional Thinking)
-
-How to think better: notice when you think stupidly and stop it.
-
-Eden – your AI assistant and creative workflow: https://eden.so/dan-yt
-...</itunes:summary></item><item><title>DanKoe - How To Take Back Control Of Your Life With Strategic Thinking （第1段/共3段）</title><description>How To Take Back Control Of Your Life With Strategic Thinking
-
- if you want to understand&lt;/...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/3d6dedeff6ec4245b6f99f018964bc77.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/3d6dedeff6ec4245b6f99f018964bc77.mp3" length="4681152" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 11:42:57 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/9d6b10bb9d10444eb04799a967d59e42.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>How To Take Back Control Of Your Life With Strategic Thinking
-
- if you want to understand&lt;/...</itunes:summary></item><item><title>DanKoe - How To Take Back Control Of Your Life With Strategic Thinking</title><description>How To Take Back Control Of Your Life With Strategic Thinking
-
-When was the last time you achieved a big goal in your life? For many people, they can't even remember. With the right psychology and str...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/73f523f6d34449f7a71e3446abc3c679.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/73f523f6d34449f7a71e3446abc3c679.mp3" length="4990752" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 11:48:47 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/89ab6274b0d94db89483e8981f59af7d.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>How To Take Back Control Of Your Life With Strategic Thinking
-
-When was the last time you achieved a big goal in your life? For many people, they can't even remember. With the right psychology and str...</itunes:summary></item><item><title>DanKoe - How To Take Back Control Of Your Life With Strategic Thinking （第1段/共3段）</title><description>How To Take Back Control Of Your Life With Strategic Thinking
-
- if you want to understand&lt;/...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/440d4fde07324db49ecc4b5e214d44fa.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/440d4fde07324db49ecc4b5e214d44fa.mp3" length="4711392" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 11:56:16 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/8697a60c50e44391b1c3807b1a6414ab.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>How To Take Back Control Of Your Life With Strategic Thinking
-
- if you want to understand&lt;/...</itunes:summary></item><item><title>DanKoe - How To Take Back Control Of Your Life With Strategic Thinking （第2段/共3段）</title><description>efs or it's like you're talking to a TV or&lt;00:12:11.7...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/e34761b9385d46568da553af90081837.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/e34761b9385d46568da553af90081837.mp3" length="3781152" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 11:57:49 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/8697a60c50e44391b1c3807b1a6414ab.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>efs or it's like you're talking to a TV or&lt;00:12:11.7...</itunes:summary></item><item><title>DanKoe - How To Take Back Control Of Your Life With Strategic Thinking （第3段/共3段）</title><description>and has the most advantageous outcomes and has the most advantageous outcomes and and you map out the&lt;00:23:5...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/fdd447741a514b11a4d0e99146fdc795.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/fdd447741a514b11a4d0e99146fdc795.mp3" length="2889504" type="audio/mpeg"/><pubDate>Thu, 09 Apr 2026 11:58:56 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/8697a60c50e44391b1c3807b1a6414ab.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>and has the most advantageous outcomes and has the most advantageous outcomes and and you map out the&lt;00:23:5...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第1段/共7段）</title><description>Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI
-
- code's not even the right verb anymore, code's not even the...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/5aebf350b93e449a833a74f6f51a32bc.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/5aebf350b93e449a833a74f6f51a32bc.mp3" length="4357008" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:23:28 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI
-
- code's not even the right verb anymore, code's not even the...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第2段/共7段）</title><description>ea network and it found the the local area network and it found the the local area network and it found the Sonos thing uh the&lt;/c...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/daea60b662984bf4bab2405bd1c8a431.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/daea60b662984bf4bab2405bd1c8a431.mp3" length="4241376" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:24:53 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>ea network and it found the the local area network and it found the the local area network and it found the Sonos thing uh the&lt;/c...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第3段/共7段）</title><description>ing around like frontier level everything around like frontier level intelligence is about extrapolation and intelligence is about extrapolation and intelligence is about extrapolation and scaling&lt;...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/f5656be2e7d842698194227d5bf880b9.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/f5656be2e7d842698194227d5bf880b9.mp3" length="4672080" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:26:35 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>ing around like frontier level everything around like frontier level intelligence is about extrapolation and intelligence is about extrapolation and intelligence is about extrapolation and scaling&lt;...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第4段/共7段）</title><description>nature and some animals niches of uh of nature and some animals niches of uh of nature and some animals have overdeveloped visual cortex or have...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/fc5e141d8af2478786d35212a1f056ac.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/fc5e141d8af2478786d35212a1f056ac.mp3" length="4323600" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:28:00 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>nature and some animals niches of uh of nature and some animals niches of uh of nature and some animals have overdeveloped visual cortex or have...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第5段/共7段）</title><description>like I think overhang where there can be like a lot overhang where there can be like a lot overhang where there can be like a lot of...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/415c79d0e93c435eb294067a2315d402.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/415c79d0e93c435eb294067a2315d402.mp3" length="4394880" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:29:39 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>like I think overhang where there can be like a lot overhang where there can be like a lot overhang where there can be like a lot of...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第6段/共7段）</title><description>Windows and Mac OS. closed like you know Windows and Mac OS. closed like you know Windows and Mac OS. These are large software p...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/f6e762d6d3c343a391f219c4f626d525.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/f6e762d6d3c343a391f219c4f626d525.mp3" length="3850704" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:31:25 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>Windows and Mac OS. closed like you know Windows and Mac OS. closed like you know Windows and Mac OS. These are large software p...</itunes:summary></item><item><title> Skill Issue: Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI （第7段/共7段）</title><description>d trying to guess the betting games and stock markets and so on. M stock markets and so on. M stock markets and so on. M &amp;gt;&amp;gt; so I kind&lt;00:59:31...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/9cbf07f02c414e0c92e6fa958612e418.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/9cbf07f02c414e0c92e6fa958612e418.mp3" length="3154752" type="audio/mpeg"/><pubDate>Sun, 12 Apr 2026 05:32:46 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>d trying to guess the betting games and stock markets and so on. M stock markets and so on. M stock markets and so on. M &amp;gt;&amp;gt; so I kind&lt;00:59:31...</itunes:summary></item><item><title>harness engineering</title><description>最近爆火的 Harness Engineering 到底是个啥？一期讲透！
-
-Harness Engineering 是 AI 工程领域继 Prompt Engineering、Context Engineering 之后的第三次重心迁移。
-
-这期视频我会从演进、构成、实践三个角度把它讲透，包括 OpenAI 和 Anthropic 的真实实践案例。
-
-推荐资源：
-
-《OpenClaw 完全指南（花园版）》：https://my.feishu.cn/wiki/QzGAwOH4LiZOYXktGyhcHoLUnRe
-《code秘密花园 AI 教程资源合集》：https://my.feishu.c...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/e4867ee050a14c80ac4b4ee20ae7951d.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/e4867ee050a14c80ac4b4ee20ae7951d.mp3" length="6253632" type="audio/mpeg"/><pubDate>Mon, 13 Apr 2026 09:56:26 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/39973cd1c11144e195ba39023ec703d4.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>最近爆火的 Harness Engineering 到底是个啥？一期讲透！
-
-Harness Engineering 是 AI 工程领域继 Prompt Engineering、Context Engineering 之后的第三次重心迁移。
-
-这期视频我会从演进、构成、实践三个角度把它讲透，包括 OpenAI 和 Anthropic 的真实实践案例。
-
-推荐资源：
-
-《OpenClaw 完全指南（花园版）》：https://my.feishu.cn/wiki/QzGAwOH4LiZOYXktGyhcHoLUnRe
-《code秘密花园 AI 教程资源合集》：https://my.feishu.c...</itunes:summary></item><item><title> DanKoe - You Need To Be Extreme If You Want Your Life To Change</title><description>You Need To Be Extreme If You Want Your Life To Change
-
-25% off the premium content library (with full one-person business course): https://letters.thedankoe.com/88de5d98
-
-read my letters: https://letters.thedankoe.com
-
-The best AI and note-taking tool: https://kortex.co
-
-How I systemize my life wit...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/81d637b6d13045dfac1fa3537114d87e.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/81d637b6d13045dfac1fa3537114d87e.mp3" length="4046544" type="audio/mpeg"/><pubDate>Mon, 13 Apr 2026 10:18:15 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/9e0e187638aa47a386c7c2bd8351f49e.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>You Need To Be Extreme If You Want Your Life To Change
-
-25% off the premium content library (with full one-person business course): https://letters.thedankoe.com/88de5d98
-
-read my letters: https://letters.thedankoe.com
-
-The best AI and note-taking tool: https://kortex.co
-
-How I systemize my life wit...</itunes:summary></item><item><title>24小时重启人生系统</title><description>给自己24 小时，你将彻底改变人生！这套系统我用了 3 年,只讲一次，只要一天，彻底摆脱“失控感”：90%的人都搞错了的底层逻辑！
-
-成为此频道的会员即可获享以下福利：
-https://www.youtube.com/channel/UCQA5srwjPU3CXFQ7lTDhyAw/join
-每天日程满满，但一天结束只觉得累？你真正面对的不是“不够自律”，而是一种不断自我强化的“失控感”。
-本期视频只交给你一套我亲测 3 年、帮几十个普通人掰回生活的
-【24小时重启系统】
-彻底搞懂你的大脑底层机制，用一天的执行，切断内耗回路。
-
-🎯 高能时间线导航（干货密集，建议先赞后看）：
-00:00 24...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/c36d6c3dc38c4eeabd31437787a114a8.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/c36d6c3dc38c4eeabd31437787a114a8.mp3" length="16345389" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:06:47 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/1b404c6d13d7409a8344d4e292252b29.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>给自己24 小时，你将彻底改变人生！这套系统我用了 3 年,只讲一次，只要一天，彻底摆脱“失控感”：90%的人都搞错了的底层逻辑！
-
-成为此频道的会员即可获享以下福利：
-https://www.youtube.com/channel/UCQA5srwjPU3CXFQ7lTDhyAw/join
-每天日程满满，但一天结束只觉得累？你真正面对的不是“不够自律”，而是一种不断自我强化的“失控感”。
-本期视频只交给你一套我亲测 3 年、帮几十个普通人掰回生活的
-【24小时重启系统】
-彻底搞懂你的大脑底层机制，用一天的执行，切断内耗回路。
-
-🎯 高能时间线导航（干货密集，建议先赞后看）：
-00:00 24...</itunes:summary></item><item><title>外在是内在的映照</title><description>你必須對自己的外在形象上癮！—卡爾．榮格 #榮格心理學 #自我成長 #外在與內在 #自我掌控 #心理轉化
-
-這句話並不是在鼓吹虛榮，而是在提醒你——外在是內在的映照。
-榮格認為，人的外貌、姿態、氣場，都是潛意識的象徵語言。
-當你忽視自己的形象，其實是在向世界、也向自己傳達一種訊息：
-「我不再在意我內在的秩序與力量。」
-真正的自我掌控，
-是讓你的外在與內在保持一致——
-讓你的形象成為靈魂的延伸，
-讓你所展現的每一個細節，都在對世界說：
-「我清醒、我自信、我正在成為更完整的自己。」
-對自己的外在上癮，
-不是膚淺，
-而是一種深層的自我尊重與靈魂紀律。...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/44411422e8404f72b56eee4019ccc761.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/44411422e8404f72b56eee4019ccc761.mp3" length="3803472" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:13:15 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/b412aadab0c34cfd90eb2a195fd47698.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>你必須對自己的外在形象上癮！—卡爾．榮格 #榮格心理學 #自我成長 #外在與內在 #自我掌控 #心理轉化
-
-這句話並不是在鼓吹虛榮，而是在提醒你——外在是內在的映照。
-榮格認為，人的外貌、姿態、氣場，都是潛意識的象徵語言。
-當你忽視自己的形象，其實是在向世界、也向自己傳達一種訊息：
-「我不再在意我內在的秩序與力量。」
-真正的自我掌控，
-是讓你的外在與內在保持一致——
-讓你的形象成為靈魂的延伸，
-讓你所展現的每一個細節，都在對世界說：
-「我清醒、我自信、我正在成為更完整的自己。」
-對自己的外在上癮，
-不是膚淺，
-而是一種深層的自我尊重與靈魂紀律。...</itunes:summary></item><item><title>掌握自律的13分钟</title><description>The Only 13 Minutes You Need To Master Discipline Once And For All | Jocko Willink
-
- [music] Why does discipline equal freedom? Because the more discipline you have in your life, the more freedom you will end up with. This went wrong. This failed. Didn't accomplish this. A...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/ed88e2de7d394f9c8400cb739f9cdcd4.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/ed88e2de7d394f9c8400cb739f9cdcd4.mp3" length="3722112" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:16:43 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/f2287e9ef303421998152981ec1d6115.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>The Only 13 Minutes You Need To Master Discipline Once And For All | Jocko Willink
-
- [music] Why does discipline equal freedom? Because the more discipline you have in your life, the more freedom you will end up with. This went wrong. This failed. Didn't accomplish this. A...</itunes:summary></item><item><title>达利奥警示：美英衰退与黑暗时代 （第1段/共2段）</title><description>Ray Dalio: We’re Heading Into Very, Very Dark Times! America &amp; The UK’s Decline Is Coming!
-
- Pay attention. Pain plus reflection equals progress. And from that principle, my company became the largest hedge fund in the world. &amp;gt;&amp;gt; Managing how much? &amp;gt;&amp;gt; $150 billi...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/b383f1161b6f432b85377025c32b752d.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/b383f1161b6f432b85377025c32b752d.mp3" length="17060112" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:26:13 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/3d44955380d345e485224a71c842ccb7.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>Ray Dalio: We’re Heading Into Very, Very Dark Times! America &amp; The UK’s Decline Is Coming!
-
- Pay attention. Pain plus reflection equals progress. And from that principle, my company became the largest hedge fund in the world. &amp;gt;&amp;gt; Managing how much? &amp;gt;&amp;gt; $150 billi...</itunes:summary></item><item><title>达利奥警示：美英衰退与黑暗时代 （第2段/共2段）</title><description>ier in some way. And when I told my friends that I was interviewing you, I'm interviewing 16 people while I'm in New York over the over the next month. When I told my friends, my best friends in the world, that I'm interviewing you, all of them were telling me to pass on a message of thanks because...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/c1c1b261f0d34bc5878d0818c77cf6aa.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/c1c1b261f0d34bc5878d0818c77cf6aa.mp3" length="279648" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:26:24 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/3d44955380d345e485224a71c842ccb7.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>ier in some way. And when I told my friends that I was interviewing you, I'm interviewing 16 people while I'm in New York over the over the next month. When I told my friends, my best friends in the world, that I'm interviewing you, all of them were telling me to pass on a message of thanks because...</itunes:summary></item><item><title>未来工作与高收入技能</title><description>The Future Of Work (&amp; The New High-Income Skill Stack)
-
- I want to ask you a question that may sound weird at first. And that question is, why are you watching this? Why are you watching this video specifically? Because you have access to chat GPT. You have access to Claud...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/a6a0ee9df7a14cfab76c6913012a2dad.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/a6a0ee9df7a14cfab76c6913012a2dad.mp3" length="6958512" type="audio/mpeg"/><pubDate>Thu, 23 Apr 2026 06:34:13 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/2541f7527cd24f2d8efd8c5701d21405.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>The Future Of Work (&amp; The New High-Income Skill Stack)
-
- I want to ask you a question that may sound weird at first. And that question is, why are you watching this? Why are you watching this video specifically? Because you have access to chat GPT. You have access to Claud...</itunes:summary></item><item><title>44条人生残酷真相 （第1段/共3段）</title><description>44 Harsh Truths About The Game Of Life - Naval Ravikant (4K)
-
- Happiness is being satisfied with what you have. Success comes from dissatisfaction. Is success worth it then? Oof. I'm not sure that statement is true anymore. Like I made that statement a long time ago and a...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/9a01af1f38db484abcfd1a066f6e80e8.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/9a01af1f38db484abcfd1a066f6e80e8.mp3" length="17116128" type="audio/mpeg"/><pubDate>Sun, 26 Apr 2026 12:08:04 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/d4d1006e253d4e139682b32ed658af89.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>44 Harsh Truths About The Game Of Life - Naval Ravikant (4K)
-
- Happiness is being satisfied with what you have. Success comes from dissatisfaction. Is success worth it then? Oof. I'm not sure that statement is true anymore. Like I made that statement a long time ago and a...</itunes:summary></item><item><title>44条人生残酷真相 （第2段/共3段）</title><description>don't know if necessarily for some people Pure happiness is the ultimate goal. They want to, you know, just be blissfully happy wherever they are, whenever they are. But I think other people, most people would say, well, I'm here in this world. I'm here in this life. I don't understand it or why, b...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/b02acc2ceb594544a36b00825c143eee.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/b02acc2ceb594544a36b00825c143eee.mp3" length="16556688" type="audio/mpeg"/><pubDate>Sun, 26 Apr 2026 12:12:04 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/d4d1006e253d4e139682b32ed658af89.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>don't know if necessarily for some people Pure happiness is the ultimate goal. They want to, you know, just be blissfully happy wherever they are, whenever they are. But I think other people, most people would say, well, I'm here in this world. I'm here in this life. I don't understand it or why, b...</itunes:summary></item><item><title>44条人生残酷真相 （第3段/共3段）</title><description>evolved um you know there was even like this sounds too ludicrous to be true and I don't know if it fully is true but there were a a fairly large group of doctors based on studies who believed until the 1980s that babies couldn't feel pain and so even to this day I think circumcision is done without...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/7c462e2f902b4903bd794a31d1737be7.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/7c462e2f902b4903bd794a31d1737be7.mp3" length="16561440" type="audio/mpeg"/><pubDate>Sun, 26 Apr 2026 12:16:06 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/d4d1006e253d4e139682b32ed658af89.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>evolved um you know there was even like this sounds too ludicrous to be true and I don't know if it fully is true but there were a a fairly large group of doctors based on studies who believed until the 1980s that babies couldn't feel pain and so even to this day I think circumcision is done without...</itunes:summary></item><item><title>Karpathy 访谈启示录</title><description># Karpathy 访谈启示录
-## 对喜马拉雅演化为 AI 原生内容与服务平台的评估标准与自进化启发
-
-&gt; **文档性质**：Karpathy 播客深度启示分析（喜马拉雅专项）
-&gt; **定稿日期**：2026-04-21
-&gt; **作者**：老余 × 小艾
-&gt; **核心主题**：喜马拉雅 AI 原生转型的评估标准设计与自进化机制
-
----
-
-## 目录
-
-- [引言：为什么这期播客对喜马拉雅转型至关重要](#引言为什么这期播客对喜马拉雅转型至关重要)
-- [第一部分：Karpathy 访谈的核心洞察](#第一部分karpathy-访谈的核心洞察)
-- [第二部分：穿透表面的三个底层判断](#...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/d5293a9cd22941bd99a9e0b521ba885b.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/d5293a9cd22941bd99a9e0b521ba885b.mp3" length="10840608" type="audio/mpeg"/><pubDate>Mon, 27 Apr 2026 23:44:36 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary># Karpathy 访谈启示录
-## 对喜马拉雅演化为 AI 原生内容与服务平台的评估标准与自进化启发
-
-&gt; **文档性质**：Karpathy 播客深度启示分析（喜马拉雅专项）
-&gt; **定稿日期**：2026-04-21
-&gt; **作者**：老余 × 小艾
-&gt; **核心主题**：喜马拉雅 AI 原生转型的评估标准设计与自进化机制
-
----
-
-## 目录
-
-- [引言：为什么这期播客对喜马拉雅转型至关重要](#引言为什么这期播客对喜马拉雅转型至关重要)
-- [第一部分：Karpathy 访谈的核心洞察](#第一部分karpathy-访谈的核心洞察)
-- [第二部分：穿透表面的三个底层判断](#...</itunes:summary></item></channel></rss>
+ For a long time, I wrestled with this question of do I have to be dissatisfied to be driven? Is is that part of it? Is that is part of it that I have this vision for where I want to be or what I want to ac...</itunes:summary></item></channel></rss>
