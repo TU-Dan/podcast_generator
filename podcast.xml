@@ -1,5 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Sun, 07 Jun 2026 04:04:15 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>韬定律刷屏之后，华为的突破真相与冷静思考#韬定律#半导体#芯片#国产算力#科创板</title><description>如果你是今晚才开始学习先进封装,不用学了,已经来不及了,因为今天的考试早在四个月前,甚至半年前我们就已经给你开卷了。
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Sun, 07 Jun 2026 06:18:42 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>内存暴涨，谁在哭？谁在笑？</title><description>朋友们 你想赚钱吗?
+我跟你说 现在这机会多的是
+你就看看过去这一年 你错过了几个亿
+这是最近一年 美股和A股的表现
+纷纷都上涨了超过20%
+怎么样 抓住了吗?
+而这个是黄金的表现
+上涨了大概50%
+这么一笔 美股跟A股就是第一
+而这个是韩国的股市表现
+一整个国家的股值 一年之内翻了三倍
+是吧 那黄金又全地地了
+这是怎么回事
+这背后就是因为这两家公司
+三星和SK海力士
+和它俩一比 韩国的股值又成地灵
+你可能想问了 你说这两家公司
+就能带动整个国家的股值暴涨吗?
+还真是 在这一轮暴涨过后
+就这两家公司的市值加起来
+就已经占到了整个韩国cosme200总市值的一半
+你看 两家公司占了一个国家股市的...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/974560a78dc849a1a6df023472fbf303.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/974560a78dc849a1a6df023472fbf303.mp3" length="14538128" type="audio/mpeg"/><pubDate>Sun, 07 Jun 2026 06:16:09 +0000</pubDate><itunes:image href="https://podcast-generator-ar1.pages.dev/images/7cc22eee13b841e0bcb679680ea56bc9.jpg"/><itunes:explicit>no</itunes:explicit><itunes:summary>朋友们 你想赚钱吗?
+我跟你说 现在这机会多的是
+你就看看过去这一年 你错过了几个亿
+这是最近一年 美股和A股的表现
+纷纷都上涨了超过20%
+怎么样 抓住了吗?
+而这个是黄金的表现
+上涨了大概50%
+这么一笔 美股跟A股就是第一
+而这个是韩国的股市表现
+一整个国家的股值 一年之内翻了三倍
+是吧 那黄金又全地地了
+这是怎么回事
+这背后就是因为这两家公司
+三星和SK海力士
+和它俩一比 韩国的股值又成地灵
+你可能想问了 你说这两家公司
+就能带动整个国家的股值暴涨吗?
+还真是 在这一轮暴涨过后
+就这两家公司的市值加起来
+就已经占到了整个韩国cosme200总市值的一半
+你看 两家公司占了一个国家股市的...</itunes:summary></item><item><title>韬定律刷屏之后，华为的突破真相与冷静思考#韬定律#半导体#芯片#国产算力#科创板</title><description>如果你是今晚才开始学习先进封装,不用学了,已经来不及了,因为今天的考试早在四个月前,甚至半年前我们就已经给你开卷了。
 所以当大家今天晚上在研究掏的时候,有可能主力已经在研究怎么掏了,这早就拿好先手的资金,随时能给你砸成套。
 别忘了你们这个周末是怎么过来的,先学习了MLCC全球涨价,又学习了玻璃基板光护联技术,还学习了碳化规行业反转。
 结果今天呢,因为现在的短视频,这是搞流量的地方,并不是真的来传播知识,或者是教你投资的地方。
