@@ -1,5 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Sun, 07 Jun 2026 03:12:06 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>抖音视频</title><description>短短一个礼拜市场好像要变天,算力租赁行业已经变天。
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我的专属播客</title><link>https://podcast-generator-ar1.pages.dev</link><description>由 AI 自动生成的个人播客，内容来自网络文章和视频。</description><atom:link href="https://podcast-generator-ar1.pages.dev/podcast.xml" rel="self" type="application/rss+xml"/><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><language>zh-CN</language><lastBuildDate>Sun, 07 Jun 2026 04:04:15 +0000</lastBuildDate><itunes:author>Dan Tu</itunes:author><itunes:category text="Technology"/><itunes:image href="https://github.com/TU-Dan.png"/><itunes:explicit>no</itunes:explicit><itunes:owner><itunes:name>Dan Tu</itunes:name><itunes:email>blanchetu@icloud.com</itunes:email></itunes:owner><item><title>韬定律刷屏之后，华为的突破真相与冷静思考#韬定律#半导体#芯片#国产算力#科创板</title><description>如果你是今晚才开始学习先进封装,不用学了,已经来不及了,因为今天的考试早在四个月前,甚至半年前我们就已经给你开卷了。
+所以当大家今天晚上在研究掏的时候,有可能主力已经在研究怎么掏了,这早就拿好先手的资金,随时能给你砸成套。
+别忘了你们这个周末是怎么过来的,先学习了MLCC全球涨价,又学习了玻璃基板光护联技术,还学习了碳化规行业反转。
+结果今天呢,因为现在的短视频,这是搞流量的地方,并不是真的来传播知识,或者是教你投资的地方。
+搞流量要怎么搞?三大要素,断章,取义,搞对立。
+所以你看到的新闻和视频,有的只是给你讲了上半句最吸引眼球的地方,但是却没有人告诉你下半句事实的真相。
+或者有可能这些作者也...</description><guid isPermaLink="false">https://podcast-generator-ar1.pages.dev/audio/c26c2673ebc249fb8a958cfee92091f9.mp3</guid><enclosure url="https://podcast-generator-ar1.pages.dev/audio/c26c2673ebc249fb8a958cfee92091f9.mp3" length="12379007" type="audio/mpeg"/><pubDate>Sun, 07 Jun 2026 04:02:10 +0000</pubDate><itunes:explicit>no</itunes:explicit><itunes:summary>如果你是今晚才开始学习先进封装,不用学了,已经来不及了,因为今天的考试早在四个月前,甚至半年前我们就已经给你开卷了。
+所以当大家今天晚上在研究掏的时候,有可能主力已经在研究怎么掏了,这早就拿好先手的资金,随时能给你砸成套。
+别忘了你们这个周末是怎么过来的,先学习了MLCC全球涨价,又学习了玻璃基板光护联技术,还学习了碳化规行业反转。
+结果今天呢,因为现在的短视频,这是搞流量的地方,并不是真的来传播知识,或者是教你投资的地方。
+搞流量要怎么搞?三大要素,断章,取义,搞对立。
+所以你看到的新闻和视频,有的只是给你讲了上半句最吸引眼球的地方,但是却没有人告诉你下半句事实的真相。
+或者有可能这些作者也...</itunes:summary></item><item><title>抖音视频</title><description>短短一个礼拜市场好像要变天,算力租赁行业已经变天。
 从上周末到现在,算力租赁行业迎来了几条足够改变
 行业现状核预期的关键世界,有美国的风度,还有暴跌式的价格战。
 不光有美国对算力租赁大厂海外最后一块拿卡渠道打上合规的补丁,
